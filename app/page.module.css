@@ -1,0 +1,117 @@
+.page {
+  min-height: 100vh;
+}
+
+/* Hero */
+.hero {
+  padding: 100px 0 80px;
+  text-align: center;
+  background: linear-gradient(160deg, #F5F0E8 0%, #EBF0EC 60%, #E8EDF5 100%);
+}
+
+.heroSub {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 300;
+  color: var(--dark);
+  line-height: 1.15;
+  margin-bottom: 24px;
+}
+
+.heroTitle em {
+  font-style: italic;
+  color: var(--primary);
+}
+
+.heroBody {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  line-height: 1.7;
+  max-width: 480px;
+  margin: 0 auto 40px;
+}
+
+.heroCta {
+  display: inline-block;
+  padding: 16px 36px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-xl);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 4px 16px rgba(139,158,137,0.30);
+}
+
+.heroCta:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+/* Shop section */
+.shopSection {
+  padding: 80px 0;
+}
+
+.sectionTitle {
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--dark);
+  margin-bottom: 48px;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 28px;
+}
+
+/* Trust section */
+.trustSection {
+  padding: 80px 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+}
+
+.trustGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 40px;
+  text-align: center;
+}
+
+.trustItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.trustIcon {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+
+.trustItem h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--dark);
+}
+
+.trustItem p {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  max-width: 240px;
+}
