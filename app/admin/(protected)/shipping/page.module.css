@@ -1,0 +1,253 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.sub {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+.cardTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 16px;
+}
+
+.addZoneForm {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.input {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  flex: 1;
+  min-width: 180px;
+}
+
+.input:focus {
+  border-color: var(--primary);
+}
+
+.inlineError {
+  color: #dc3545;
+  font-size: 0.8rem;
+}
+
+.zoneCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+}
+
+.zoneHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.zoneHeader:hover {
+  background: #fdf5f7;
+}
+
+.zoneName {
+  font-weight: 600;
+  color: var(--dark);
+  font-size: 0.95rem;
+}
+
+.zoneCountries {
+  display: block;
+  color: var(--text-light);
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.zoneActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rateCount {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.expandIcon {
+  color: var(--text-light);
+  font-size: 0.75rem;
+}
+
+.zoneBody {
+  border-top: 1px solid var(--border);
+  padding: 20px;
+  background: #fdf8f9;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin-bottom: 20px;
+}
+
+.table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+}
+
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.right {
+  text-align: right;
+}
+
+.addRateForm {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.addRateTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rateGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.empty {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  padding: 20px 0;
+}
+
+.btnPrimary {
+  padding: 10px 20px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  padding: 9px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.btnSecondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.deleteBtn {
+  padding: 4px 10px;
+  background: rgba(220, 53, 69, 0.08);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #dc3545;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.deleteBtn:hover {
+  background: rgba(220, 53, 69, 0.16);
+}
+
+.loading {
+  color: var(--text-light);
+  text-align: center;
+  padding: 40px;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
