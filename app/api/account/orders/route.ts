@@ -34,7 +34,10 @@ export async function GET(req: NextRequest) {
   const parsed = orders.map(o => {
     let items: unknown[] = [];
     if (o.items_json) {
-      try { items = (o.items_json as string).split(',').map(s => JSON.parse(s)); } catch { items = []; }
+      try { items = (o.items_json as string).split(',').map(s => JSON.parse(s)); } catch (err) {
+        console.error('[account/orders] Failed to parse items_json:', err);
+        items = [];
+      }
     }
     const { items_json: _, ...rest } = o;
     return { ...rest, items };

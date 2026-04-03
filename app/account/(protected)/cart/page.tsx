@@ -88,7 +88,7 @@ export default function CartPage() {
             <div className={styles.total}>
               Total: <strong>${(total / 100).toFixed(2)}</strong>
             </div>
-            <a href="/" className={styles.checkoutBtn}>Checkout</a>
+          <a href="/" className={styles.checkoutBtn}>Checkout</a>
           </div>
         </>
       )}

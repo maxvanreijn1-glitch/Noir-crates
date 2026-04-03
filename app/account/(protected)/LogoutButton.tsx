@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import styles from './layout.module.css';
 
-export default function AccountLogoutButton() {
+export default function LogoutButton() {
   const router = useRouter();
 
   async function handleLogout() {
