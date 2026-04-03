@@ -371,6 +371,61 @@ export function initDb(): void {
        VALUES (?, ?, ?, ?, 1)`
     ).run(seedEmail, hash, "Super Admin", "super_admin");
   }
+
+  // Add columns to customers table if they don't exist
+  const addColumnIfMissing = (table: string, col: string, def: string) => {
+    try {
+      db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`);
+    } catch {
+      // column already exists
+    }
+  };
+  addColumnIfMissing('customers', 'password_hash', 'TEXT');
+  addColumnIfMissing('customers', 'email_verified', 'INTEGER NOT NULL DEFAULT 0');
+  addColumnIfMissing('customers', 'email_verify_token', 'TEXT');
+  addColumnIfMissing('customers', 'reset_token', 'TEXT');
+  addColumnIfMissing('customers', 'reset_token_expires', 'TEXT');
+  addColumnIfMissing('customers', 'admin_notes', 'TEXT');
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS carts (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      customer_id INTEGER NOT NULL UNIQUE,
+      updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS cart_items (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      cart_id      INTEGER NOT NULL,
+      product_id   TEXT NOT NULL,
+      product_name TEXT NOT NULL,
+      price_cents  INTEGER NOT NULL DEFAULT 0,
+      quantity     INTEGER NOT NULL DEFAULT 1,
+      image        TEXT,
+      FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
+      UNIQUE(cart_id, product_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS wishlists (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      customer_id INTEGER NOT NULL UNIQUE,
+      updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS wishlist_items (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      wishlist_id  INTEGER NOT NULL,
+      product_id   TEXT NOT NULL,
+      product_name TEXT NOT NULL,
+      price_cents  INTEGER NOT NULL DEFAULT 0,
+      image        TEXT,
+      added_at     TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (wishlist_id) REFERENCES wishlists(id) ON DELETE CASCADE,
+      UNIQUE(wishlist_id, product_id)
+    );
+  `);
 }
 
 // Run at module load time
@@ -480,4 +535,30 @@ export function paginatedQuery<T>(
     .all(...params, limit, offset) as T[];
 
   return { data, total, pages };
+}
+
+export interface Customer {
+  id: number;
+  email: string;
+  name: string | null;
+  phone: string | null;
+  password_hash: string | null;
+  email_verified: number;
+  email_verify_token: string | null;
+  reset_token: string | null;
+  reset_token_expires: string | null;
+  is_banned: number;
+  ban_reason: string | null;
+  stripe_customer_id: string | null;
+  admin_notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export function getCustomerByEmail(email: string): Customer | undefined {
+  return db.prepare('SELECT * FROM customers WHERE email = ? LIMIT 1').get(email) as Customer | undefined;
+}
+
+export function getCustomerById(id: number): Customer | undefined {
+  return db.prepare('SELECT * FROM customers WHERE id = ? LIMIT 1').get(id) as Customer | undefined;
 }
