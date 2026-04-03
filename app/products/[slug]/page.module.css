@@ -1,0 +1,136 @@
+.page {
+  padding: 48px 0 80px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-bottom: 40px;
+}
+
+.breadcrumb a:hover {
+  color: var(--primary);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.imageSection {
+  position: relative;
+}
+
+.imageWrap {
+  background: linear-gradient(135deg, #EDE8DF 0%, #E8F0EC 100%);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+}
+
+.badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 99px;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 12px;
+}
+
+.tagline {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
+.name {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 400;
+  color: var(--dark);
+}
+
+.price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.description {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.75;
+}
+
+.contents {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.contents h3 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.contents ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contents li {
+  font-size: 0.9rem;
+  color: var(--text);
+  display: flex;
+  gap: 8px;
+}
+
+.contents li span {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.actions {
+  margin-top: 8px;
+}
+
+.actions button {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 1rem;
+  border-radius: var(--radius-md);
+}
