@@ -20,7 +20,7 @@ export interface AdminUser {
 export interface AdminRole {
   id: number;
   name: string;
-  permissions: string; // JSON array stored as text
+  permissions: string; // JSON array stored as TEXT (JSON.parse before use)
   created_at: string;
 }
 
