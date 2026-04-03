@@ -21,7 +21,7 @@ if (!url) {
 
 const sql = postgres(url, {
   ssl: url.includes("localhost") ? false : "require",
-  max: 1,
+  max: 1, // intentionally limited to 1 for the migration script (short-lived process)
 });
 
 async function migrate() {
