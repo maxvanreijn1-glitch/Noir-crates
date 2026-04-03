@@ -1,0 +1,176 @@
+.title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  color: var(--dark);
+  margin-bottom: 24px;
+}
+
+.loading, .empty {
+  color: var(--text-light);
+  padding: 16px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.addressCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.addressBody {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.addrName {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.defaultBadge {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.7rem;
+  background: rgba(196, 96, 122, 0.1);
+  color: var(--primary);
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+
+.addressActions {
+  display: flex;
+  gap: 8px;
+}
+
+.btnEdit, .btnDelete {
+  flex: 1;
+  padding: 7px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  transition: background 0.15s;
+}
+
+.btnEdit:hover { background: var(--border); }
+
+.btnDelete {
+  border-color: rgba(196, 96, 122, 0.3);
+  color: var(--primary);
+}
+
+.btnDelete:hover { background: rgba(196, 96, 122, 0.08); }
+
+.formCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px;
+}
+
+.cardTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  color: var(--dark);
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.input {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: #fff;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.input:focus { border-color: var(--primary); }
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.btn {
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 10px 24px;
+  transition: background 0.2s;
+}
+
+.btn:hover:not(:disabled) { background: var(--primary-hover); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btnCancel {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-light);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+}
+
+.btnCancel:hover { background: var(--border); }
+
+.error {
+  background: rgba(196, 96, 122, 0.08);
+  border: 1px solid rgba(196, 96, 122, 0.3);
+  color: var(--primary);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}

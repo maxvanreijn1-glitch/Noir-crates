@@ -54,7 +54,7 @@ A full-featured admin area is available at `/admin`. It includes:
 - **Dashboard** — sales overview, revenue, orders by status, top products
 - **Products** — add/edit/delete products, manage stock
 - **Orders** — view all orders, update status, issue refunds/cancellations
-- **Customers** — view accounts, order history, addresses, ban/flag users, support notes
+- **Customers** — view accounts, order history, addresses, ban/flag users, support notes, admin notes, total spend
 - **Payments** — transaction history, payment status, fraud detection flags
 - **Shipping** — shipping zones & rates configuration
 - **Discounts** — coupon codes, percentage/fixed discounts
@@ -71,6 +71,103 @@ Password: ChangeMe123!        (set via ADMIN_SEED_PASSWORD env var)
 ```
 
 **⚠️ Change these credentials immediately after your first login.**
+
+## Customer Authentication
+
+Customers can create accounts, log in, and manage their data via the account portal at `/account`.
+
+### Flows
+
+| Route | Description |
+|-------|-------------|
+| `/account/signup` | Create a new customer account |
+| `/account/login` | Sign in with email + password |
+| `/account/forgot-password` | Request a password reset email |
+| `/account/reset-password?token=...` | Set a new password using a reset token |
+
+- Passwords are hashed with **bcrypt (cost 12)**
+- Sessions use **JWT** stored in a `customer_token` httpOnly cookie (30-day expiry)
+- Email verification token is generated on signup and confirmed via `/api/auth/verify-email?token=...`
+- Password reset tokens expire after **1 hour**
+- Banned customers cannot log in
+
+## Customer Account Features
+
+Once logged in, customers can access their account at `/account`:
+
+| Route | Description |
+|-------|-------------|
+| `/account` | Dashboard with links to all sections |
+| `/account/profile` | Edit name, phone; change password |
+| `/account/addresses` | Manage shipping/billing addresses (CRUD) |
+| `/account/orders` | Order history with pagination |
+| `/account/orders/[id]` | Order detail: items, status history, shipments |
+| `/account/orders/[id]/invoice` | Inline HTML invoice download |
+| `/account/wishlist` | Saved items; add to cart from wishlist |
+| `/account/cart` | Server-side cart: update quantity, remove, checkout |
+
+### REST API
+
+All account API routes are under `/api/account/` and require the `customer_token` cookie.
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/auth/signup` | POST | Register |
+| `/api/auth/login` | POST | Login |
+| `/api/auth/logout` | POST | Clear session |
+| `/api/auth/me` | GET | Current user info |
+| `/api/auth/verify-email` | GET | Confirm email via token |
+| `/api/auth/request-reset` | POST | Send password reset email |
+| `/api/auth/reset-password` | POST | Set new password from token |
+| `/api/account/profile` | GET, PUT | View/edit profile & password |
+| `/api/account/addresses` | GET, POST | List/create addresses |
+| `/api/account/addresses/[id]` | PUT, DELETE | Update/delete address |
+| `/api/account/orders` | GET | Paginated order list |
+| `/api/account/orders/[id]` | GET | Order detail |
+| `/api/account/orders/[id]/invoice` | GET | HTML invoice |
+| `/api/account/orders/[id]/reorder` | POST | Copy order items to cart |
+| `/api/account/wishlist` | GET, POST | List/add wishlist items |
+| `/api/account/wishlist/[productId]` | DELETE | Remove from wishlist |
+| `/api/account/cart` | GET, POST | View/add cart items |
+| `/api/account/cart/[itemId]` | PUT, DELETE | Update qty / remove item |
+| `/api/account/payment-methods` | GET, POST | List/attach Stripe payment methods |
+| `/api/account/payment-methods/[id]` | DELETE | Detach payment method |
+
+## Email Configuration
+
+Email is stubbed in development (logged to console only). To enable real delivery in production, integrate a provider in `lib/email.ts`.
+
+### Using Resend (recommended)
+
+```bash
+npm install resend
+```
+
+In `lib/email.ts`, replace the production `sendEmail` stub:
+
+```typescript
+import { Resend } from 'resend';
+const resend = new Resend(process.env.RESEND_API_KEY);
+await resend.emails.send({ from: process.env.EMAIL_FROM!, to: opts.to, subject: opts.subject, html: opts.html });
+```
+
+### Using SMTP (Nodemailer)
+
+```bash
+npm install nodemailer @types/nodemailer
+```
+
+Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM` in `.env.local`.
+
+## OAuth Extension Points
+
+To add Google or Apple OAuth, implement `/api/auth/google` (or `/api/auth/apple`) using [Auth.js (next-auth v5)](https://authjs.dev/):
+
+```bash
+npm install next-auth
+```
+
+Configure a provider in `auth.ts` and call `signCustomerToken` after a successful OAuth callback to issue the same `customer_token` cookie used by the rest of the account system.
 
 ## Local Development
 
@@ -99,6 +196,12 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ADMIN_JWT_SECRET=change-me-to-a-long-random-string-at-least-32-chars
 ADMIN_SEED_EMAIL=admin@example.com
 ADMIN_SEED_PASSWORD=ChangeMe123!
+
+# Customer auth
+CUSTOMER_JWT_SECRET=change-me-customer-jwt-secret-at-least-32-chars
+
+# Email (optional — needed for password reset / verification emails)
+EMAIL_FROM=noreply@noir-crates.com
 ```
 
 ### 3. Run dev server
@@ -136,8 +239,11 @@ app/
   page.module.css
   globals.css             # Design tokens + base styles
   products/[slug]/        # Dynamic product detail pages
+  account/                # Customer account portal (login, signup, dashboard, etc.)
   api/checkout/           # Stripe Checkout session API route
   api/webhooks/stripe/    # Stripe webhook handler (order/payment creation)
+  api/auth/               # Customer auth API (signup, login, logout, verify, reset)
+  api/account/            # Customer account API (profile, addresses, orders, cart, wishlist)
   api/admin/              # Admin REST API (auth, products, orders, customers, etc.)
   admin/                  # Admin UI pages (login, dashboard, products, orders, etc.)
   success/                # Order success page
@@ -145,7 +251,7 @@ app/
   about/                  # About page
   faq/                    # FAQ page
 components/
-  Navbar.tsx              # Sticky navbar with cart icon
+  Navbar.tsx              # Sticky navbar with cart icon + account link
   CartDrawer.tsx          # Slide-in cart drawer
   ProductCard.tsx         # Product grid card
   AddToCartButton.tsx     # Add to cart button (client component)
@@ -156,8 +262,11 @@ lib/
   products.ts             # Product data and types
   env.ts                  # Environment variable helpers
   db.ts                   # SQLite database (better-sqlite3) + schema
-  auth.ts                 # JWT utilities (jose)
+  auth.ts                 # Admin JWT utilities (jose)
   admin-guard.ts          # Admin route protection middleware
+  customer-auth.ts        # Customer JWT utilities
+  customer-guard.ts       # Customer route protection middleware
+  email.ts                # Email notification stubs
 data/
   noir_admin.db           # SQLite database (auto-created, gitignored)
 public/

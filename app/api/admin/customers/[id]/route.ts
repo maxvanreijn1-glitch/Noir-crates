@@ -25,7 +25,8 @@ export async function GET(req: NextRequest, { params }: Params) {
       "SELECT * FROM customer_notes WHERE customer_id = ? ORDER BY created_at DESC"
     ).all(id);
 
-    return NextResponse.json({ ...customer as object, orders, addresses, notes });
+    const totalSpend = (orders as { total_cents: number }[]).reduce((s, o) => s + o.total_cents, 0);
+    return NextResponse.json({ ...customer as object, orders, addresses, notes, total_spend_cents: totalSpend });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -53,6 +54,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
         phone = COALESCE(?, phone),
         is_banned = COALESCE(?, is_banned),
         ban_reason = COALESCE(?, ban_reason),
+        admin_notes = COALESCE(?, admin_notes),
         updated_at = ?
       WHERE id = ?
     `).run(
@@ -61,6 +63,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
       body.phone ?? null,
       body.is_banned !== undefined ? (body.is_banned ? 1 : 0) : null,
       body.ban_reason ?? null,
+      body.admin_notes ?? null,
       now,
       id,
     );

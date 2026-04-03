@@ -35,10 +35,12 @@ interface Customer {
   phone: string | null;
   is_banned: number;
   ban_reason: string | null;
+  admin_notes: string | null;
   created_at: string;
   orders: Order[];
   addresses: Address[];
   notes: CustomerNote[];
+  total_spend_cents?: number;
 }
 
 const STATUS_CLASS: Record<string, string> = {
@@ -62,6 +64,9 @@ export default function CustomerDetailPage() {
   const [addingNote, setAddingNote] = useState(false);
   const [banReason, setBanReason] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [adminNotes, setAdminNotes] = useState('');
+  const [savingNotes, setSavingNotes] = useState(false);
+  const [notesMsg, setNotesMsg] = useState('');
 
   function load() {
     setLoading(true);
@@ -70,6 +75,7 @@ export default function CustomerDetailPage() {
       .then((d) => {
         if (d.error) { setError(d.error); return; }
         setCustomer(d);
+        setAdminNotes(d.admin_notes ?? '');
       })
       .catch(() => setError('Failed to load customer'))
       .finally(() => setLoading(false));
@@ -115,6 +121,23 @@ export default function CustomerDetailPage() {
     }
   }
 
+  async function handleSaveAdminNotes(e: React.FormEvent) {
+    e.preventDefault();
+    setSavingNotes(true);
+    setNotesMsg('');
+    try {
+      const res = await fetch(`/api/admin/customers/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ admin_notes: adminNotes }),
+      });
+      if (res.ok) setNotesMsg('Saved.');
+      else setNotesMsg('Save failed.');
+    } finally {
+      setSavingNotes(false);
+    }
+  }
+
   if (loading) return <div className={styles.loading}>Loading customer…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
   if (!customer) return null;
@@ -145,6 +168,15 @@ export default function CustomerDetailPage() {
             </div>
             {customer.ban_reason && (
               <div className={styles.infoRow}><span>Ban Reason</span><span>{customer.ban_reason}</span></div>
+            )}
+            {customer.total_spend_cents !== undefined && (
+              <div className={styles.infoRow}>
+                <span>Total Spend</span>
+                <span>${(customer.total_spend_cents / 100).toFixed(2)}</span>
+              </div>
+            )}
+            {customer.admin_notes && (
+              <div className={styles.infoRow}><span>Admin Notes</span><span>{customer.admin_notes}</span></div>
             )}
           </div>
         </div>
@@ -218,6 +250,24 @@ export default function CustomerDetailPage() {
             </tbody>
           </table>
         )}
+      </div>
+
+      {/* Admin Notes */}
+      <div className={styles.card}>
+        <h2 className={styles.cardTitle}>Admin Notes</h2>
+        <form onSubmit={handleSaveAdminNotes}>
+          <textarea
+            value={adminNotes}
+            onChange={e => setAdminNotes(e.target.value)}
+            className={styles.textarea}
+            rows={4}
+            placeholder="Internal notes visible only to admins…"
+          />
+          {notesMsg && <p style={{ fontSize: '0.85rem', color: '#6ee7b7', marginTop: 4 }}>{notesMsg}</p>}
+          <button type="submit" disabled={savingNotes} className={styles.btnPrimary} style={{ marginTop: 8 }}>
+            {savingNotes ? 'Saving…' : 'Save Notes'}
+          </button>
+        </form>
       </div>
 
       {/* Support notes */}

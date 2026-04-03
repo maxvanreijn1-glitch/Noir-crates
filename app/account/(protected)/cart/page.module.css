@@ -1,0 +1,127 @@
+.title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  color: var(--dark);
+  margin-bottom: 24px;
+}
+
+.loading, .empty { color: var(--text-light); padding: 16px 0; }
+
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.item:last-child { border-bottom: none; }
+
+.image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.productName {
+  font-weight: 600;
+  color: var(--dark);
+  font-size: 0.9rem;
+}
+
+.price {
+  color: var(--text-light);
+  font-size: 0.82rem;
+  margin-top: 2px;
+}
+
+.qtyControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qtyBtn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.qtyBtn:hover:not(:disabled) { background: var(--border); }
+.qtyBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.qty {
+  min-width: 24px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.lineTotal {
+  min-width: 64px;
+  text-align: right;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--dark);
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+.removeBtn:hover { color: var(--primary); background: rgba(196, 96, 122, 0.06); }
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.total {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.checkoutBtn {
+  background: var(--primary);
+  color: #fff;
+  padding: 11px 28px;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.checkoutBtn:hover { background: var(--primary-hover); }
