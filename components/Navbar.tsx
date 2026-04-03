@@ -16,6 +16,7 @@ export default function Navbar() {
         </Link>
         <nav className={styles.nav}>
           <Link href="/" className={styles.navLink}>Shop</Link>
+          <Link href="/tcg" className={styles.navLink}>TCG</Link>
           <Link href="/blind-boxes" className={styles.navLink}>Blind Boxes</Link>
           <Link href="/mystery-crates" className={styles.navLink}>Mystery Crates</Link>
           <Link href="/about" className={styles.navLink}>About</Link>
