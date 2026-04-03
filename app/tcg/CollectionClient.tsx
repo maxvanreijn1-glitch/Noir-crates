@@ -4,7 +4,7 @@ import { products } from "@/lib/products";
 import GenericCollectionClient from "@/components/CollectionClient";
 
 const TCG_GAMES = [
-  "Pokémon Trading Card Game",
+  "Pokémon Japanese Booster Boxes",
   "Magic: The Gathering",
   "Yu-Gi-Oh! Trading Card Game",
   "One Piece Card Game",
