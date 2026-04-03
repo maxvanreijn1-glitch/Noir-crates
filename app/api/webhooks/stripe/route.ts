@@ -8,7 +8,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeSecretKey) {
+    return NextResponse.json({ error: "Stripe secret key not configured" }, { status: 500 });
+  }
+
+  const stripe = new Stripe(stripeSecretKey, {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     apiVersion: "2026-03-25.dahlia" as any,
   });

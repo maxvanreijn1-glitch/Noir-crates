@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { db, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
+function parseCountries(raw: unknown): string[] {
+  try {
+    return JSON.parse(raw as string) as string[];
+  } catch {
+    return [];
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     const admin = await requireAdmin(req, "shipping:read");
@@ -10,13 +18,7 @@ export async function GET(req: NextRequest) {
     const zones = db.prepare("SELECT * FROM shipping_zones ORDER BY id DESC").all() as Record<string, unknown>[];
     const result = zones.map((zone) => {
       const rates = db.prepare("SELECT * FROM shipping_rates WHERE zone_id = ?").all(zone.id as number);
-      let countries: string[] = [];
-      try {
-        countries = JSON.parse(zone.countries as string) as string[];
-      } catch {
-        countries = [];
-      }
-      return { ...zone, countries, rates };
+      return { ...zone, countries: parseCountries(zone.countries), rates };
     });
 
     return NextResponse.json({ data: result });
@@ -41,12 +43,6 @@ export async function POST(req: NextRequest) {
     `).run(body.name, JSON.stringify(body.countries ?? []));
 
     const zone = db.prepare("SELECT * FROM shipping_zones WHERE id = ?").get(result.lastInsertRowid) as Record<string, unknown>;
-    let countries: string[] = [];
-    try {
-      countries = JSON.parse(zone.countries as string) as string[];
-    } catch {
-      countries = [];
-    }
 
     createAuditLog(
       admin.id, "create", "shipping_zone",
@@ -55,7 +51,7 @@ export async function POST(req: NextRequest) {
       req.headers.get("x-forwarded-for") ?? ""
     );
 
-    return NextResponse.json({ ...zone, countries }, { status: 201 });
+    return NextResponse.json({ ...zone, countries: parseCountries(zone.countries) }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
