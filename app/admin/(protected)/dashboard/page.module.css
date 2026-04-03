@@ -1,0 +1,178 @@
+.header {
+  margin-bottom: 28px;
+}
+
+.title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.sub {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
+}
+
+.statLabel {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--dark);
+  line-height: 1.1;
+}
+
+.statSub {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 0;
+}
+
+.card + .card {
+  margin-bottom: 0;
+}
+
+.card:last-child {
+  margin-bottom: 0;
+}
+
+/* standalone card used for revenue table */
+div > .card:last-of-type {
+  margin-top: 0;
+}
+
+.cardTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 16px;
+}
+
+.statusList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.statusPending { background: #fff3cd; color: #856404; }
+.statusProcessing { background: #cce5ff; color: #004085; }
+.statusShipped { background: #d4edda; color: #155724; }
+.statusDelivered { background: #d1ecf1; color: #0c5460; }
+.statusCancelled { background: #f8d7da; color: #721c24; }
+.statusRefunded { background: #e2e3e5; color: #383d41; }
+.statusDefault { background: var(--border); color: var(--text); }
+
+.statusCount {
+  font-weight: 600;
+  color: var(--dark);
+  font-size: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+}
+
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.right {
+  text-align: right;
+}
+
+.empty {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  padding: 8px 0;
+}
+
+.loading {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  padding: 40px;
+  text-align: center;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
