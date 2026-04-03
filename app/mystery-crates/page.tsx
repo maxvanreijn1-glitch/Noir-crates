@@ -76,7 +76,7 @@ export default function MysteryCratesPage() {
                 <li>Free shipping</li>
               </ul>
               <Link href="/#shop" className={styles.cta}>
-                Add to Crate
+                Shop this crate
               </Link>
             </div>
           ))}
