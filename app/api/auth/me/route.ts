@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   const customer = await requireCustomer(req);
   if (customer instanceof NextResponse) return customer;
 
-  const data = getCustomerById(customer.id);
+  const data = await getCustomerById(customer.id);
   if (!data) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   return NextResponse.json({

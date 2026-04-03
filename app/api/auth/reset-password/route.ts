@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 import type { Customer } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
@@ -15,9 +15,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
     }
 
-    const customer = db
-      .prepare("SELECT * FROM customers WHERE reset_token = ? LIMIT 1")
-      .get(token) as Customer | undefined;
+    const rows = await sql<Customer[]>`
+      SELECT * FROM customers WHERE reset_token = ${token} LIMIT 1
+    `;
+    const customer = rows[0];
 
     if (!customer || !customer.reset_token_expires) {
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
@@ -29,11 +30,11 @@ export async function POST(req: NextRequest) {
 
     const password_hash = await bcrypt.hash(password, 12);
 
-    db.prepare(`
+    await sql`
       UPDATE customers
-      SET password_hash = ?, reset_token = NULL, reset_token_expires = NULL, updated_at = ?
-      WHERE id = ?
-    `).run(password_hash, new Date().toISOString(), customer.id);
+      SET password_hash = ${password_hash}, reset_token = NULL, reset_token_expires = NULL, updated_at = NOW()
+      WHERE id = ${customer.id}
+    `;
 
     return NextResponse.json({ ok: true });
   } catch (error) {

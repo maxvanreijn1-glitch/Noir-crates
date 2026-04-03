@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -39,58 +39,48 @@ export async function POST(req: NextRequest) {
 
       let customerId: number | null = null;
       if (email) {
-        const existing = db.prepare("SELECT id FROM customers WHERE email = ?").get(email) as { id: number } | undefined;
-        if (existing) {
-          customerId = existing.id;
+        const existing = await sql<[{ id: number }]>`SELECT id FROM customers WHERE email = ${email} LIMIT 1`;
+        if (existing.length > 0) {
+          customerId = existing[0].id;
         } else {
-          const res = db.prepare(
-            "INSERT INTO customers (email, stripe_customer_id) VALUES (?, ?)"
-          ).run(email, session.customer as string ?? null);
-          customerId = res.lastInsertRowid as number;
+          const stripeCustomer = (session.customer as string) ?? null;
+          const [inserted] = await sql<[{ id: number }]>`
+            INSERT INTO customers (email, stripe_customer_id) VALUES (${email}, ${stripeCustomer}) RETURNING id
+          `;
+          customerId = inserted.id;
         }
       }
 
       const orderNumber = `ORD-${session.id.slice(-8).toUpperCase()}`;
       const totalCents = session.amount_total ?? 0;
+      const currency = session.currency ?? "usd";
+      const paymentIntent = (session.payment_intent as string) ?? null;
 
-      const orderRes = db.prepare(`
+      const [order] = await sql<[{ id: number }]>`
         INSERT INTO orders (order_number, customer_id, status, total_cents,
           subtotal_cents, currency, stripe_session_id, stripe_payment_intent)
-        VALUES (?, ?, 'pending', ?, ?, ?, ?, ?)
-      `).run(
-        orderNumber,
-        customerId,
-        totalCents,
-        totalCents,
-        session.currency ?? "usd",
-        session.id,
-        session.payment_intent as string ?? null,
-      );
+        VALUES (${orderNumber}, ${customerId}, 'pending', ${totalCents}, ${totalCents}, ${currency}, ${session.id}, ${paymentIntent})
+        RETURNING id
+      `;
+      const orderId = order.id;
 
-      const orderId = orderRes.lastInsertRowid as number;
-
-      db.prepare(`
+      await sql`
         INSERT INTO payments (order_id, stripe_payment_intent, amount_cents, currency, status, provider)
-        VALUES (?, ?, ?, ?, 'paid', 'stripe')
-      `).run(
-        orderId,
-        session.payment_intent as string ?? null,
-        totalCents,
-        session.currency ?? "usd",
-      );
+        VALUES (${orderId}, ${paymentIntent}, ${totalCents}, ${currency}, 'paid', 'stripe')
+      `;
 
-      db.prepare(`
+      await sql`
         INSERT INTO order_status_history (order_id, status, note)
-        VALUES (?, 'pending', 'Order created via Stripe webhook')
-      `).run(orderId);
+        VALUES (${orderId}, 'pending', 'Order created via Stripe webhook')
+      `;
     }
 
     if (event.type === "payment_intent.payment_failed") {
       const intent = event.data.object as Stripe.PaymentIntent;
-      db.prepare(`
-        UPDATE payments SET status = 'failed', updated_at = ?
-        WHERE stripe_payment_intent = ?
-      `).run(new Date().toISOString(), intent.id);
+      await sql`
+        UPDATE payments SET status = 'failed', updated_at = NOW()
+        WHERE stripe_payment_intent = ${intent.id}
+      `;
     }
 
     return NextResponse.json({ received: true });

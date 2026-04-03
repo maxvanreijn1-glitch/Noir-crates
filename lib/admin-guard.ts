@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFromRequest } from "@/lib/auth";
-import { db, getAdminById } from "@/lib/db";
+import { sql, getAdminById } from "@/lib/db";
 import type { AdminRole } from "@/lib/db";
 
 export async function requireAdmin(
@@ -14,15 +14,15 @@ export async function requireAdmin(
   }
 
   if (requiredPermission) {
-    const adminUser = getAdminById(adminPayload.id);
+    const adminUser = await getAdminById(adminPayload.id);
     if (!adminUser || !adminUser.is_active) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Look up role permissions from the database
-    const roleRow = db
-      .prepare(`SELECT permissions FROM admin_roles WHERE name = ? LIMIT 1`)
-      .get(adminUser.role) as Pick<AdminRole, "permissions"> | undefined;
+    const roleRows = await sql<Pick<AdminRole, "permissions">[]>`
+      SELECT permissions FROM admin_roles WHERE name = ${adminUser.role} LIMIT 1
+    `;
+    const roleRow = roleRows[0];
 
     if (!roleRow) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

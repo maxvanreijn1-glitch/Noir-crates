@@ -6,16 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
-    "@types/better-sqlite3": "^7.6.13",
     "@vercel/analytics": "^2.0.1",
     "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^12.8.0",
     "jose": "^6.2.2",
     "next": "16.2.2",
+    "postgres": "^3.4.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "stripe": "^21.0.1"
@@ -26,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }

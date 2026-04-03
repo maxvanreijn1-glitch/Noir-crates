@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 export async function GET(req: NextRequest) {
@@ -7,9 +7,11 @@ export async function GET(req: NextRequest) {
     const admin = await requireAdmin(req, "cms:read");
     if (admin instanceof NextResponse) return admin;
 
-    const banners = db.prepare("SELECT * FROM cms_banners ORDER BY sort_order ASC").all();
-    const pages = db.prepare("SELECT * FROM cms_pages ORDER BY id DESC").all();
-    const blog_posts = db.prepare("SELECT * FROM cms_blog_posts ORDER BY id DESC").all();
+    const [banners, pages, blog_posts] = await Promise.all([
+      sql`SELECT * FROM cms_banners ORDER BY sort_order ASC`,
+      sql`SELECT * FROM cms_pages ORDER BY id DESC`,
+      sql`SELECT * FROM cms_blog_posts ORDER BY id DESC`,
+    ]);
 
     return NextResponse.json({ banners, pages, blog_posts });
   } catch (error) {

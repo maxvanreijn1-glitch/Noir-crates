@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 type Params = { params: Promise<{ id: string }> };
@@ -10,43 +10,34 @@ export async function PUT(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM cms_banners WHERE id = ?").get(id);
-    if (!existing) {
+    const existing = await sql`SELECT id FROM cms_banners WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Banner not found" }, { status: 404 });
     }
 
     const body = await req.json() as Record<string, unknown>;
-    const now = new Date().toISOString();
+    const isActive = body.is_active !== undefined ? (body.is_active ? true : false) : null;
 
-    db.prepare(`
+    await sql`
       UPDATE cms_banners SET
-        title = COALESCE(?, title),
-        subtitle = COALESCE(?, subtitle),
-        image_url = COALESCE(?, image_url),
-        link_url = COALESCE(?, link_url),
-        is_active = COALESCE(?, is_active),
-        sort_order = COALESCE(?, sort_order),
-        updated_at = ?
-      WHERE id = ?
-    `).run(
-      body.title ?? null,
-      body.subtitle ?? null,
-      body.image_url ?? null,
-      body.link_url ?? null,
-      body.is_active !== undefined ? (body.is_active ? 1 : 0) : null,
-      body.sort_order ?? null,
-      now,
-      id,
-    );
+        title = COALESCE(${body.title as string | null ?? null}, title),
+        subtitle = COALESCE(${body.subtitle as string | null ?? null}, subtitle),
+        image_url = COALESCE(${body.image_url as string | null ?? null}, image_url),
+        link_url = COALESCE(${body.link_url as string | null ?? null}, link_url),
+        is_active = COALESCE(${isActive}, is_active),
+        sort_order = COALESCE(${body.sort_order as number | null ?? null}, sort_order),
+        updated_at = NOW()
+      WHERE id = ${id}
+    `;
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, "update", "cms_banner", id,
       body as object,
       req.headers.get("x-forwarded-for") ?? ""
     );
 
-    const updated = db.prepare("SELECT * FROM cms_banners WHERE id = ?").get(id);
-    return NextResponse.json(updated);
+    const updated = await sql`SELECT * FROM cms_banners WHERE id = ${id}`;
+    return NextResponse.json(updated[0]);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -59,14 +50,14 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM cms_banners WHERE id = ?").get(id);
-    if (!existing) {
+    const existing = await sql`SELECT id FROM cms_banners WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Banner not found" }, { status: 404 });
     }
 
-    db.prepare("DELETE FROM cms_banners WHERE id = ?").run(id);
+    await sql`DELETE FROM cms_banners WHERE id = ${id}`;
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, "delete", "cms_banner", id, {},
       req.headers.get("x-forwarded-for") ?? ""
     );

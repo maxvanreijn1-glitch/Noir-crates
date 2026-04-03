@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog, paginatedQuery } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 export async function GET(req: NextRequest) {
@@ -10,9 +10,13 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") ?? "20", 10)));
+    const offset = (page - 1) * limit;
 
-    const result = paginatedQuery("discounts", "", [], page, limit);
-    return NextResponse.json(result);
+    const countResult = await sql<[{ count: string }]>`SELECT COUNT(*) as count FROM discounts`;
+    const data = await sql`SELECT * FROM discounts ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+    const total = parseInt(countResult[0].count);
+
+    return NextResponse.json({ data, total, pages: Math.ceil(total / limit) });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -37,27 +41,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "type must be 'percentage' or 'fixed'" }, { status: 400 });
     }
 
-    const result = db.prepare(`
-      INSERT INTO discounts (code, type, value, min_order_cents, max_uses, is_active,
-        starts_at, expires_at, description)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      (code as string).toUpperCase(),
-      type,
-      value,
-      body.min_order_cents ?? 0,
-      body.max_uses ?? null,
-      body.is_active !== undefined ? (body.is_active ? 1 : 0) : 1,
-      body.starts_at ?? null,
-      body.expires_at ?? null,
-      body.description ?? null,
-    );
+    const isActive = body.is_active !== undefined ? (body.is_active ? true : false) : true;
 
-    const discount = db.prepare("SELECT * FROM discounts WHERE id = ?").get(result.lastInsertRowid);
+    const [discount] = await sql<[Record<string, unknown>]>`
+      INSERT INTO discounts (code, type, value, min_order_cents, max_uses, is_active, starts_at, expires_at, description)
+      VALUES (
+        ${(code as string).toUpperCase()},
+        ${type as string},
+        ${value as number},
+        ${body.min_order_cents as number ?? 0},
+        ${body.max_uses as number | null ?? null},
+        ${isActive},
+        ${body.starts_at as string | null ?? null},
+        ${body.expires_at as string | null ?? null},
+        ${body.description as string | null ?? null}
+      )
+      RETURNING *
+    `;
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, "create", "discount",
-      result.lastInsertRowid as number,
+      discount.id as number,
       { code, type },
       req.headers.get("x-forwarded-for") ?? ""
     );

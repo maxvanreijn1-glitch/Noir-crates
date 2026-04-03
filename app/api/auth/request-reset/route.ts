@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { getCustomerByEmail, db } from "@/lib/db";
+import { sql, getCustomerByEmail } from "@/lib/db";
 import { sendEmail, passwordResetEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const customer = getCustomerByEmail(email);
+    const customer = await getCustomerByEmail(email);
     // Always return success to prevent email enumeration
     if (!customer) {
       return NextResponse.json({ ok: true });
@@ -21,10 +21,10 @@ export async function POST(req: NextRequest) {
     const reset_token = crypto.randomBytes(32).toString("hex");
     const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-    db.prepare(`
-      UPDATE customers SET reset_token = ?, reset_token_expires = ?, updated_at = ?
-      WHERE id = ?
-    `).run(reset_token, expires, new Date().toISOString(), customer.id);
+    await sql`
+      UPDATE customers SET reset_token = ${reset_token}, reset_token_expires = ${expires}, updated_at = NOW()
+      WHERE id = ${customer.id}
+    `;
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
     const resetUrl = `${baseUrl}/account/reset-password?token=${reset_token}`;

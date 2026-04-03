@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { requireCustomer } from "@/lib/customer-guard";
 
 type Params = { params: Promise<{ id: string }> };
@@ -10,16 +10,18 @@ export async function GET(req: NextRequest, { params }: Params) {
 
   const { id } = await params;
 
-  const order = db.prepare(
-    "SELECT * FROM orders WHERE id = ? AND customer_id = ?"
-  ).get(id, customer.id) as Record<string, unknown> | undefined;
+  const orders = await sql<Record<string, unknown>[]>`
+    SELECT * FROM orders WHERE id = ${id} AND customer_id = ${customer.id}
+  `;
+  const order = orders[0];
 
   if (!order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
 
-  const items = db.prepare("SELECT * FROM order_items WHERE order_id = ?")
-    .all(id) as { product_name: string; quantity: number; unit_price_cents: number }[];
+  const items = await sql<{ product_name: string; quantity: number; unit_price_cents: number }[]>`
+    SELECT * FROM order_items WHERE order_id = ${id}
+  `;
 
   const itemsRows = items.map(i => `
     <tr>

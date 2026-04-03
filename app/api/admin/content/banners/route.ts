@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 export async function GET(req: NextRequest) {
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const admin = await requireAdmin(req, "cms:read");
     if (admin instanceof NextResponse) return admin;
 
-    const banners = db.prepare("SELECT * FROM cms_banners ORDER BY sort_order ASC").all();
+    const banners = await sql`SELECT * FROM cms_banners ORDER BY sort_order ASC`;
     return NextResponse.json({ data: banners });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
@@ -25,23 +25,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "title is required" }, { status: 400 });
     }
 
-    const result = db.prepare(`
+    const isActive = body.is_active !== undefined ? (body.is_active ? true : false) : true;
+
+    const [banner] = await sql<[Record<string, unknown>]>`
       INSERT INTO cms_banners (title, subtitle, image_url, link_url, is_active, sort_order)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(
-      body.title,
-      body.subtitle ?? null,
-      body.image_url ?? null,
-      body.link_url ?? null,
-      body.is_active !== undefined ? (body.is_active ? 1 : 0) : 1,
-      body.sort_order ?? 0,
-    );
+      VALUES (
+        ${body.title as string},
+        ${body.subtitle as string | null ?? null},
+        ${body.image_url as string | null ?? null},
+        ${body.link_url as string | null ?? null},
+        ${isActive},
+        ${body.sort_order as number ?? 0}
+      )
+      RETURNING *
+    `;
 
-    const banner = db.prepare("SELECT * FROM cms_banners WHERE id = ?").get(result.lastInsertRowid);
-
-    createAuditLog(
+    await createAuditLog(
       admin.id, "create", "cms_banner",
-      result.lastInsertRowid as number,
+      banner.id as number,
       { title: body.title },
       req.headers.get("x-forwarded-for") ?? ""
     );

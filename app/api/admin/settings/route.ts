@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 export async function GET(req: NextRequest) {
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const admin = await requireAdmin(req, "settings:read");
     if (admin instanceof NextResponse) return admin;
 
-    const rows = db.prepare("SELECT key, value FROM settings").all() as { key: string; value: string }[];
+    const rows = await sql<{ key: string; value: string }[]>`SELECT key, value FROM settings`;
     const settings: Record<string, string> = {};
     for (const row of rows) {
       settings[row.key] = row.value;
@@ -30,28 +30,21 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Body must be a key/value object" }, { status: 400 });
     }
 
-    const now = new Date().toISOString();
-    const upsert = db.prepare(`
-      INSERT INTO settings (key, value, updated_at)
-      VALUES (?, ?, ?)
-      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
-    `);
+    for (const [key, value] of Object.entries(body)) {
+      await sql`
+        INSERT INTO settings (key, value, updated_at)
+        VALUES (${key}, ${String(value)}, NOW())
+        ON CONFLICT(key) DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
+      `;
+    }
 
-    const upsertMany = db.transaction((entries: [string, string][]) => {
-      for (const [key, value] of entries) {
-        upsert.run(key, String(value), now);
-      }
-    });
-
-    upsertMany(Object.entries(body));
-
-    createAuditLog(
+    await createAuditLog(
       admin.id, "update", "settings", null,
       { keys: Object.keys(body) },
       req.headers.get("x-forwarded-for") ?? ""
     );
 
-    const rows = db.prepare("SELECT key, value FROM settings").all() as { key: string; value: string }[];
+    const rows = await sql<{ key: string; value: string }[]>`SELECT key, value FROM settings`;
     const settings: Record<string, string> = {};
     for (const row of rows) {
       settings[row.key] = row.value;

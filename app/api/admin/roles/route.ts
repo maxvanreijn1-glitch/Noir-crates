@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 export async function GET(req: NextRequest) {
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const admin = await requireAdmin(req, "admins:read");
     if (admin instanceof NextResponse) return admin;
 
-    const roles = db.prepare("SELECT * FROM admin_roles ORDER BY id ASC").all() as Record<string, unknown>[];
+    const roles = await sql<Record<string, unknown>[]>`SELECT * FROM admin_roles ORDER BY id ASC`;
     const parsed = roles.map((role) => {
       let permissions: string[] = [];
       try {
@@ -35,11 +35,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "name is required" }, { status: 400 });
     }
 
-    const result = db.prepare(`
-      INSERT INTO admin_roles (name, permissions) VALUES (?, ?)
-    `).run(body.name, JSON.stringify(body.permissions ?? []));
+    const [role] = await sql<[Record<string, unknown>]>`
+      INSERT INTO admin_roles (name, permissions) VALUES (${body.name}, ${JSON.stringify(body.permissions ?? [])})
+      RETURNING *
+    `;
 
-    const role = db.prepare("SELECT * FROM admin_roles WHERE id = ?").get(result.lastInsertRowid) as Record<string, unknown>;
     let permissions: string[] = [];
     try {
       permissions = JSON.parse(role.permissions as string) as string[];
@@ -47,9 +47,9 @@ export async function POST(req: NextRequest) {
       permissions = [];
     }
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, "create", "role",
-      result.lastInsertRowid as number,
+      role.id as number,
       { name: body.name },
       req.headers.get("x-forwarded-for") ?? ""
     );

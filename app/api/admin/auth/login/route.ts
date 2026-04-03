@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const admin = getAdminByEmail(email);
+    const admin = await getAdminByEmail(email);
 
     if (!admin || !(await bcrypt.compare(password, admin.password_hash))) {
       return NextResponse.json(
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       req.headers.get("x-real-ip") ??
       "unknown";
 
-    createAuditLog(admin.id, "login", "admin_user", admin.id, {}, ip);
+    await createAuditLog(admin.id, "login", "admin_user", admin.id, {}, ip);
 
     const response = NextResponse.json({
       admin: {
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 8, // 8 hours
+      maxAge: 60 * 60 * 8,
       secure: process.env.NODE_ENV === "production",
     });
 

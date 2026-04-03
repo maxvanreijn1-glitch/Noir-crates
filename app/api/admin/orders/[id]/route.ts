@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 type Params = { params: Promise<{ id: string }> };
@@ -10,17 +10,17 @@ export async function GET(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const order = db.prepare("SELECT * FROM orders WHERE id = ?").get(id);
-    if (!order) {
+    const orders = await sql`SELECT * FROM orders WHERE id = ${id}`;
+    if (orders.length === 0) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    const items = db.prepare("SELECT * FROM order_items WHERE order_id = ?").all(id);
-    const statusHistory = db.prepare(
-      "SELECT * FROM order_status_history WHERE order_id = ? ORDER BY created_at ASC"
-    ).all(id);
+    const [items, statusHistory] = await Promise.all([
+      sql`SELECT * FROM order_items WHERE order_id = ${id}`,
+      sql`SELECT * FROM order_status_history WHERE order_id = ${id} ORDER BY created_at ASC`,
+    ]);
 
-    return NextResponse.json({ ...order as object, items, status_history: statusHistory });
+    return NextResponse.json({ ...orders[0], items, status_history: statusHistory });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -33,38 +33,37 @@ export async function PUT(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM orders WHERE id = ?").get(id) as { status: string } | undefined;
-    if (!existing) {
+    const existing = await sql<{ status: string }[]>`SELECT status FROM orders WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
     const body = await req.json() as Record<string, unknown>;
     const { status, notes } = body;
-    const now = new Date().toISOString();
 
-    db.prepare(`
+    await sql`
       UPDATE orders SET
-        status = COALESCE(?, status),
-        notes = COALESCE(?, notes),
-        updated_at = ?
-      WHERE id = ?
-    `).run(status ?? null, notes ?? null, now, id);
+        status = COALESCE(${status as string | null ?? null}, status),
+        notes = COALESCE(${notes as string | null ?? null}, notes),
+        updated_at = NOW()
+      WHERE id = ${id}
+    `;
 
-    if (status && status !== existing.status) {
-      db.prepare(`
+    if (status && status !== existing[0].status) {
+      await sql`
         INSERT INTO order_status_history (order_id, status, note, admin_id)
-        VALUES (?, ?, ?, ?)
-      `).run(id, status, body.note ?? null, admin.id);
+        VALUES (${id}, ${status as string}, ${body.note as string | null ?? null}, ${admin.id})
+      `;
     }
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, "update", "order", id,
       { status, notes },
       req.headers.get("x-forwarded-for") ?? ""
     );
 
-    const updated = db.prepare("SELECT * FROM orders WHERE id = ?").get(id);
-    return NextResponse.json(updated);
+    const updated = await sql`SELECT * FROM orders WHERE id = ${id}`;
+    return NextResponse.json(updated[0]);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -77,8 +76,8 @@ export async function POST(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM orders WHERE id = ?").get(id);
-    if (!existing) {
+    const existing = await sql`SELECT id FROM orders WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
@@ -90,23 +89,20 @@ export async function POST(req: NextRequest, { params }: Params) {
     }
 
     const newStatus = action === "refund" ? "refunded" : "cancelled";
-    const now = new Date().toISOString();
 
-    db.prepare("UPDATE orders SET status = ?, updated_at = ? WHERE id = ?")
-      .run(newStatus, now, id);
-
-    db.prepare(`
+    await sql`UPDATE orders SET status = ${newStatus}, updated_at = NOW() WHERE id = ${id}`;
+    await sql`
       INSERT INTO order_status_history (order_id, status, note, admin_id)
-      VALUES (?, ?, ?, ?)
-    `).run(id, newStatus, `Order ${action}ed by admin`, admin.id);
+      VALUES (${id}, ${newStatus}, ${`Order ${action}ed by admin`}, ${admin.id})
+    `;
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, action, "order", id, {},
       req.headers.get("x-forwarded-for") ?? ""
     );
 
-    const updated = db.prepare("SELECT * FROM orders WHERE id = ?").get(id);
-    return NextResponse.json(updated);
+    const updated = await sql`SELECT * FROM orders WHERE id = ${id}`;
+    return NextResponse.json(updated[0]);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });

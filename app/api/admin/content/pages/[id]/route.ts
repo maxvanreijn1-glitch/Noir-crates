@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 type Params = { params: Promise<{ id: string }> };
@@ -10,41 +10,33 @@ export async function PUT(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM cms_pages WHERE id = ?").get(id);
-    if (!existing) {
+    const existing = await sql`SELECT id FROM cms_pages WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });
     }
 
     const body = await req.json() as Record<string, unknown>;
-    const now = new Date().toISOString();
+    const isPublished = body.is_published !== undefined ? (body.is_published ? true : false) : null;
 
-    db.prepare(`
+    await sql`
       UPDATE cms_pages SET
-        slug = COALESCE(?, slug),
-        title = COALESCE(?, title),
-        content = COALESCE(?, content),
-        is_published = COALESCE(?, is_published),
-        meta_description = COALESCE(?, meta_description),
-        updated_at = ?
-      WHERE id = ?
-    `).run(
-      body.slug ?? null,
-      body.title ?? null,
-      body.content ?? null,
-      body.is_published !== undefined ? (body.is_published ? 1 : 0) : null,
-      body.meta_description ?? null,
-      now,
-      id,
-    );
+        slug = COALESCE(${body.slug as string | null ?? null}, slug),
+        title = COALESCE(${body.title as string | null ?? null}, title),
+        content = COALESCE(${body.content as string | null ?? null}, content),
+        is_published = COALESCE(${isPublished}, is_published),
+        meta_description = COALESCE(${body.meta_description as string | null ?? null}, meta_description),
+        updated_at = NOW()
+      WHERE id = ${id}
+    `;
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, "update", "cms_page", id,
       body as object,
       req.headers.get("x-forwarded-for") ?? ""
     );
 
-    const updated = db.prepare("SELECT * FROM cms_pages WHERE id = ?").get(id);
-    return NextResponse.json(updated);
+    const updated = await sql`SELECT * FROM cms_pages WHERE id = ${id}`;
+    return NextResponse.json(updated[0]);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -57,14 +49,14 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM cms_pages WHERE id = ?").get(id);
-    if (!existing) {
+    const existing = await sql`SELECT id FROM cms_pages WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });
     }
 
-    db.prepare("DELETE FROM cms_pages WHERE id = ?").run(id);
+    await sql`DELETE FROM cms_pages WHERE id = ${id}`;
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, "delete", "cms_page", id, {},
       req.headers.get("x-forwarded-for") ?? ""
     );

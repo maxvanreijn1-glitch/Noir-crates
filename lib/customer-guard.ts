@@ -9,7 +9,7 @@ export async function requireCustomer(
   if (!payload) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const customer = getCustomerById(payload.id);
+  const customer = await getCustomerById(payload.id);
   if (!customer || customer.is_banned) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

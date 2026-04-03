@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { requireCustomer } from "@/lib/customer-guard";
 
 export async function GET(req: NextRequest) {
   const customer = await requireCustomer(req);
   if (customer instanceof NextResponse) return customer;
 
-  const cart = db.prepare("SELECT * FROM carts WHERE customer_id = ?")
-    .get(customer.id) as { id: number } | undefined;
+  const carts = await sql<{ id: number }[]>`SELECT id FROM carts WHERE customer_id = ${customer.id}`;
+  const cart = carts[0];
   if (!cart) return NextResponse.json([]);
 
-  const items = db.prepare(
-    "SELECT * FROM cart_items WHERE cart_id = ? ORDER BY id ASC"
-  ).all(cart.id);
+  const items = await sql`SELECT * FROM cart_items WHERE cart_id = ${cart.id} ORDER BY id ASC`;
   return NextResponse.json(items);
 }
 
@@ -31,31 +29,31 @@ export async function POST(req: NextRequest) {
     }
 
     // Ensure cart exists
-    let cart = db.prepare("SELECT * FROM carts WHERE customer_id = ?")
-      .get(customer.id) as { id: number } | undefined;
-    if (!cart) {
-      const res = db.prepare(
-        "INSERT INTO carts (customer_id, updated_at) VALUES (?, ?)"
-      ).run(customer.id, new Date().toISOString());
-      cart = { id: res.lastInsertRowid as number };
+    let cartRows = await sql<{ id: number }[]>`SELECT id FROM carts WHERE customer_id = ${customer.id}`;
+    let cartId: number;
+    if (cartRows.length === 0) {
+      const [newCart] = await sql<{ id: number }[]>`
+        INSERT INTO carts (customer_id, updated_at) VALUES (${customer.id}, NOW()) RETURNING id
+      `;
+      cartId = newCart.id;
+    } else {
+      cartId = cartRows[0].id;
     }
 
     const qty = Math.max(1, body.quantity ?? 1);
 
-    db.prepare(`
+    await sql`
       INSERT INTO cart_items (cart_id, product_id, product_name, price_cents, quantity, image)
-      VALUES (?, ?, ?, ?, ?, ?)
+      VALUES (${cartId}, ${body.product_id}, ${body.product_name}, ${body.price_cents ?? 0}, ${qty}, ${body.image ?? null})
       ON CONFLICT(cart_id, product_id) DO UPDATE SET
-        quantity = excluded.quantity,
-        price_cents = excluded.price_cents,
-        image = excluded.image
-    `).run(cart.id, body.product_id, body.product_name, body.price_cents ?? 0, qty, body.image ?? null);
+        quantity = EXCLUDED.quantity,
+        price_cents = EXCLUDED.price_cents,
+        image = EXCLUDED.image
+    `;
 
-    db.prepare("UPDATE carts SET updated_at = ? WHERE id = ?")
-      .run(new Date().toISOString(), cart.id);
+    await sql`UPDATE carts SET updated_at = NOW() WHERE id = ${cartId}`;
 
-    const items = db.prepare("SELECT * FROM cart_items WHERE cart_id = ? ORDER BY id ASC")
-      .all(cart.id);
+    const items = await sql`SELECT * FROM cart_items WHERE cart_id = ${cartId} ORDER BY id ASC`;
     return NextResponse.json(items, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

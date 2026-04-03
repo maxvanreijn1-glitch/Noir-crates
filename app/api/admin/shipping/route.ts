@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 function parseCountries(raw: unknown): string[] {
@@ -15,11 +15,11 @@ export async function GET(req: NextRequest) {
     const admin = await requireAdmin(req, "shipping:read");
     if (admin instanceof NextResponse) return admin;
 
-    const zones = db.prepare("SELECT * FROM shipping_zones ORDER BY id DESC").all() as Record<string, unknown>[];
-    const result = zones.map((zone) => {
-      const rates = db.prepare("SELECT * FROM shipping_rates WHERE zone_id = ?").all(zone.id as number);
+    const zones = await sql<Record<string, unknown>[]>`SELECT * FROM shipping_zones ORDER BY id DESC`;
+    const result = await Promise.all(zones.map(async (zone) => {
+      const rates = await sql`SELECT * FROM shipping_rates WHERE zone_id = ${zone.id as number}`;
       return { ...zone, countries: parseCountries(zone.countries), rates };
-    });
+    }));
 
     return NextResponse.json({ data: result });
   } catch (error) {
@@ -38,15 +38,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "name is required" }, { status: 400 });
     }
 
-    const result = db.prepare(`
-      INSERT INTO shipping_zones (name, countries) VALUES (?, ?)
-    `).run(body.name, JSON.stringify(body.countries ?? []));
+    const [zone] = await sql<[Record<string, unknown>]>`
+      INSERT INTO shipping_zones (name, countries) VALUES (${body.name}, ${JSON.stringify(body.countries ?? [])})
+      RETURNING *
+    `;
 
-    const zone = db.prepare("SELECT * FROM shipping_zones WHERE id = ?").get(result.lastInsertRowid) as Record<string, unknown>;
-
-    createAuditLog(
+    await createAuditLog(
       admin.id, "create", "shipping_zone",
-      result.lastInsertRowid as number,
+      zone.id as number,
       { name: body.name },
       req.headers.get("x-forwarded-for") ?? ""
     );
