@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 interface CartItem {
@@ -16,6 +17,8 @@ export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<number | null>(null);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const router = useRouter();
 
   function load() {
     fetch('/api/account/cart')
@@ -40,6 +43,25 @@ export default function CartPage() {
   async function handleRemove(id: number) {
     await fetch(`/api/account/cart/${id}`, { method: 'DELETE' });
     load();
+  }
+
+  async function handleCheckout() {
+    setCheckingOut(true);
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: items.map(i => ({ productId: i.product_id, quantity: i.quantity })),
+        }),
+      });
+      const data = await res.json() as { url?: string; error?: string };
+      if (data.url) {
+        router.push(data.url);
+      }
+    } finally {
+      setCheckingOut(false);
+    }
   }
 
   const total = items.reduce((s, i) => s + i.price_cents * i.quantity, 0);
@@ -88,7 +110,13 @@ export default function CartPage() {
             <div className={styles.total}>
               Total: <strong>${(total / 100).toFixed(2)}</strong>
             </div>
-          <a href="/" className={styles.checkoutBtn}>Checkout</a>
+            <button
+              onClick={handleCheckout}
+              disabled={checkingOut || items.length === 0}
+              className={styles.checkoutBtn}
+            >
+              {checkingOut ? 'Redirecting…' : 'Checkout'}
+            </button>
           </div>
         </>
       )}
