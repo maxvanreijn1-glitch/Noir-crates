@@ -3,18 +3,49 @@
 A calm, minimalist mystery box ecommerce storefront built with Next.js (App Router), TypeScript, and Stripe Checkout.
 
 ## Stack
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
 - **Styling**: CSS Modules + Global CSS
 - **Payments**: Stripe Checkout
 - **Deployment**: Vercel
 
+## Pages
+| Route | Description |
+|-------|-------------|
+| `/` | Home — hero + full product grid |
+| `/blind-boxes` | **Blind Boxes collection page** — filter, sort, paginate |
+| `/products/[slug]` | Individual product detail page |
+| `/about` | About page |
+| `/faq` | FAQ page |
+
+## Blind Boxes Collection Page (`/blind-boxes`)
+
+A full collection page modelled on standard e-commerce category pages:
+
+- **Filter sidebar** (desktop) / **slide-in drawer** (mobile) with:
+  - Availability: "In stock only" toggle
+  - Category: multi-select checkboxes (Mystery Box, Series, Limited Edition, Premium)
+  - "Clear all filters" shortcut when filters are active
+- **Sort bar**: result count + dropdown (Featured, Price: Low/High, Name A–Z/Z–A, Newest)
+- **Product grid**: 3 columns desktop → 2 tablet → 1 mobile, 6 items per page
+- **Pagination**: numbered pages with prev/next buttons
+- **Sold-out state**: greyed-out disabled button on out-of-stock products
+- **Add to Crate**: adds item to the mini-cart drawer (existing Stripe-backed cart)
+- **Accessible**: keyboard navigation, `aria-modal` on drawers, focus trap, `aria-current` on pagination
+
 ## Products
-| SKU | Name | Price |
-|-----|------|-------|
-| mini | Mini Crate | $14.99 |
-| studio | Studio Crate | $34.99 |
-| midnight | Midnight Crate | $69.99 |
+| SKU | Name | Price | Category | In Stock |
+|-----|------|-------|----------|----------|
+| mini | Mini Crate | $14.99 | Mystery Box | ✓ |
+| studio | Studio Crate | $34.99 | Mystery Box | ✓ |
+| midnight | Midnight Crate | $69.99 | Premium | ✓ |
+| labubu-forest | Forest Series Vol.1 | $22.99 | Series | ✓ |
+| neon-pop | Neon Pop Vol.2 | $19.99 | Series | ✓ |
+| dark-matter | Dark Matter Vol.1 | $44.99 | Limited Edition | ✓ |
+| crystal-dream | Crystal Dream | $27.99 | Mystery Box | ✓ |
+| sakura-bloom | Sakura Bloom | $24.99 | Series | ✗ (sold out) |
+| stellar-night | Stellar Night | $32.99 | Premium | ✓ |
+| mossy-garden | Mossy Garden | $17.99 | Mystery Box | ✓ |
 
 ## Local Development
 

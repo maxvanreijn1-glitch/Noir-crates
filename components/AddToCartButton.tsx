@@ -8,6 +8,14 @@ export default function AddToCartButton({ product }: { product: Product }) {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
 
+  if (!product.inStock) {
+    return (
+      <button className={`${styles.btn} ${styles.soldOut}`} disabled aria-disabled="true">
+        Sold Out
+      </button>
+    );
+  }
+
   function handleAdd() {
     addItem(product);
     setAdded(true);
