@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { db, getCustomerById } from "@/lib/db";
+import { sql, getCustomerById } from "@/lib/db";
 import { requireCustomer } from "@/lib/customer-guard";
 
 export async function GET(req: NextRequest) {
   const customer = await requireCustomer(req);
   if (customer instanceof NextResponse) return customer;
 
-  const data = getCustomerById(customer.id);
+  const data = await getCustomerById(customer.id);
   if (!data) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   return NextResponse.json({
@@ -26,11 +26,10 @@ export async function PUT(req: NextRequest) {
 
   try {
     const body = await req.json() as Record<string, unknown>;
-    const now = new Date().toISOString();
 
     if (body.current_password !== undefined) {
       // Password change
-      const data = getCustomerById(customer.id);
+      const data = await getCustomerById(customer.id);
       if (!data || !data.password_hash) {
         return NextResponse.json({ error: "No password set" }, { status: 400 });
       }
@@ -43,26 +42,22 @@ export async function PUT(req: NextRequest) {
         return NextResponse.json({ error: "New password must be at least 8 characters" }, { status: 400 });
       }
       const password_hash = await bcrypt.hash(newPass, 12);
-      db.prepare("UPDATE customers SET password_hash = ?, updated_at = ? WHERE id = ?")
-        .run(password_hash, now, customer.id);
+      await sql`UPDATE customers SET password_hash = ${password_hash}, updated_at = NOW() WHERE id = ${customer.id}`;
       return NextResponse.json({ ok: true });
     }
 
     // Profile update
-    db.prepare(`
+    const newName = body.name !== undefined ? (body.name as string | null) : null;
+    const newPhone = body.phone !== undefined ? (body.phone as string | null) : null;
+    await sql`
       UPDATE customers
-      SET name = COALESCE(?, name),
-          phone = COALESCE(?, phone),
-          updated_at = ?
-      WHERE id = ?
-    `).run(
-      body.name !== undefined ? (body.name as string | null) : null,
-      body.phone !== undefined ? (body.phone as string | null) : null,
-      now,
-      customer.id
-    );
+      SET name = COALESCE(${newName}, name),
+          phone = COALESCE(${newPhone}, phone),
+          updated_at = NOW()
+      WHERE id = ${customer.id}
+    `;
 
-    const updated = getCustomerById(customer.id);
+    const updated = await getCustomerById(customer.id);
     return NextResponse.json({
       id: updated!.id,
       email: updated!.email,

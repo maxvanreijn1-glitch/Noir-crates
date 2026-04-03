@@ -18,7 +18,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   const { id } = await params;
 
   try {
-    const data = getCustomerById(customer.id);
+    const data = await getCustomerById(customer.id);
     if (!data?.stripe_customer_id) {
       return NextResponse.json({ error: "No payment methods" }, { status: 404 });
     }

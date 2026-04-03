@@ -5,13 +5,18 @@ import { getCustomerById } from "@/lib/db";
 export async function requireCustomer(
   req: NextRequest
 ): Promise<{ id: number; email: string } | NextResponse> {
-  const payload = await getCustomerFromRequest(req);
-  if (!payload) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const payload = await getCustomerFromRequest(req);
+    if (!payload) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const customer = await getCustomerById(payload.id);
+    if (!customer || customer.is_banned) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return payload;
+  } catch (error) {
+    console.error("[requireCustomer] Database error:", error);
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
   }
-  const customer = getCustomerById(payload.id);
-  if (!customer || customer.is_banned) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  return payload;
 }

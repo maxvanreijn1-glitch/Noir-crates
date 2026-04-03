@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog, paginatedQuery } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 export async function GET(req: NextRequest) {
@@ -10,25 +10,28 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") ?? "20", 10)));
+    const offset = (page - 1) * limit;
     const search = searchParams.get("search") ?? "";
     const category = searchParams.get("category") ?? "";
 
-    const conditions: string[] = [];
-    const params: unknown[] = [];
+    let data, countResult;
 
-    if (search) {
-      conditions.push("(name LIKE ? OR slug LIKE ?)");
-      params.push(`%${search}%`, `%${search}%`);
+    if (search && category) {
+      countResult = await sql<[{ count: string }]>`SELECT COUNT(*) as count FROM products WHERE (name ILIKE ${'%' + search + '%'} OR slug ILIKE ${'%' + search + '%'}) AND category = ${category}`;
+      data = await sql`SELECT * FROM products WHERE (name ILIKE ${'%' + search + '%'} OR slug ILIKE ${'%' + search + '%'}) AND category = ${category} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (search) {
+      countResult = await sql<[{ count: string }]>`SELECT COUNT(*) as count FROM products WHERE name ILIKE ${'%' + search + '%'} OR slug ILIKE ${'%' + search + '%'}`;
+      data = await sql`SELECT * FROM products WHERE name ILIKE ${'%' + search + '%'} OR slug ILIKE ${'%' + search + '%'} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (category) {
+      countResult = await sql<[{ count: string }]>`SELECT COUNT(*) as count FROM products WHERE category = ${category}`;
+      data = await sql`SELECT * FROM products WHERE category = ${category} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else {
+      countResult = await sql<[{ count: string }]>`SELECT COUNT(*) as count FROM products`;
+      data = await sql`SELECT * FROM products ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
     }
-    if (category) {
-      conditions.push("category = ?");
-      params.push(category);
-    }
 
-    const where = conditions.join(" AND ");
-    const result = paginatedQuery("products", where, params, page, limit);
-
-    return NextResponse.json(result);
+    const total = parseInt(countResult[0].count);
+    return NextResponse.json({ data, total, pages: Math.ceil(total / limit) });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -50,28 +53,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = db.prepare(`
+    const inStock = body.in_stock !== undefined ? (body.in_stock ? true : false) : true;
+    const [product] = await sql<[Record<string, unknown>]>`
       INSERT INTO products (name, slug, price_cents, category, tagline, description,
         compare_at_price_cents, image, in_stock, stock_qty)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      name,
-      slug,
-      price_cents,
-      category,
-      body.tagline ?? null,
-      body.description ?? null,
-      body.compare_at_price_cents ?? null,
-      body.image ?? null,
-      body.in_stock !== undefined ? (body.in_stock ? 1 : 0) : 1,
-      body.stock_qty ?? 0,
-    );
+      VALUES (
+        ${name as string}, ${slug as string}, ${price_cents as number}, ${category as string},
+        ${body.tagline as string | null ?? null}, ${body.description as string | null ?? null},
+        ${body.compare_at_price_cents as number | null ?? null}, ${body.image as string | null ?? null},
+        ${inStock}, ${body.stock_qty as number ?? 0}
+      )
+      RETURNING *
+    `;
 
-    const product = db.prepare("SELECT * FROM products WHERE id = ?").get(result.lastInsertRowid);
-
-    createAuditLog(
+    await createAuditLog(
       admin.id, "create", "product",
-      result.lastInsertRowid as number,
+      product.id as number,
       { name, slug },
       req.headers.get("x-forwarded-for") ?? ""
     );

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 export async function GET(req: NextRequest) {
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const admin = await requireAdmin(req, "cms:read");
     if (admin instanceof NextResponse) return admin;
 
-    const pages = db.prepare("SELECT * FROM cms_pages ORDER BY id DESC").all();
+    const pages = await sql`SELECT * FROM cms_pages ORDER BY id DESC`;
     return NextResponse.json({ data: pages });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
@@ -25,22 +25,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "slug and title are required" }, { status: 400 });
     }
 
-    const result = db.prepare(`
+    const isPublished = body.is_published ? true : false;
+
+    const [page] = await sql<[Record<string, unknown>]>`
       INSERT INTO cms_pages (slug, title, content, is_published, meta_description)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(
-      body.slug,
-      body.title,
-      body.content ?? null,
-      body.is_published ? 1 : 0,
-      body.meta_description ?? null,
-    );
+      VALUES (
+        ${body.slug as string},
+        ${body.title as string},
+        ${body.content as string | null ?? null},
+        ${isPublished},
+        ${body.meta_description as string | null ?? null}
+      )
+      RETURNING *
+    `;
 
-    const page = db.prepare("SELECT * FROM cms_pages WHERE id = ?").get(result.lastInsertRowid);
-
-    createAuditLog(
+    await createAuditLog(
       admin.id, "create", "cms_page",
-      result.lastInsertRowid as number,
+      page.id as number,
       { slug: body.slug, title: body.title },
       req.headers.get("x-forwarded-for") ?? ""
     );

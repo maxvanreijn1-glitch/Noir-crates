@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { requireCustomer } from "@/lib/customer-guard";
 
 type Params = { params: Promise<{ itemId: string }> };
@@ -10,12 +10,12 @@ interface CartItem {
 }
 
 async function getCartAndItem(customerId: number, itemId: string): Promise<{ cart: { id: number }; item: CartItem } | null> {
-  const cart = db.prepare("SELECT id FROM carts WHERE customer_id = ?")
-    .get(customerId) as { id: number } | undefined;
+  const carts = await sql<[{ id: number }]>`SELECT id FROM carts WHERE customer_id = ${customerId}`;
+  const cart = carts[0];
   if (!cart) return null;
 
-  const item = db.prepare("SELECT * FROM cart_items WHERE id = ? AND cart_id = ?")
-    .get(itemId, cart.id) as CartItem | undefined;
+  const items = await sql<CartItem[]>`SELECT * FROM cart_items WHERE id = ${itemId} AND cart_id = ${cart.id}`;
+  const item = items[0];
   if (!item) return null;
 
   return { cart, item };
@@ -39,12 +39,11 @@ export async function PUT(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: "quantity must be >= 1" }, { status: 400 });
     }
 
-    db.prepare("UPDATE cart_items SET quantity = ? WHERE id = ?").run(qty, itemId);
-    db.prepare("UPDATE carts SET updated_at = ? WHERE id = ?")
-      .run(new Date().toISOString(), found.cart.id);
+    await sql`UPDATE cart_items SET quantity = ${qty} WHERE id = ${itemId}`;
+    await sql`UPDATE carts SET updated_at = NOW() WHERE id = ${found.cart.id}`;
 
-    const updated = db.prepare("SELECT * FROM cart_items WHERE id = ?").get(itemId);
-    return NextResponse.json(updated);
+    const updated = await sql`SELECT * FROM cart_items WHERE id = ${itemId}`;
+    return NextResponse.json(updated[0]);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -61,9 +60,8 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Cart item not found" }, { status: 404 });
   }
 
-  db.prepare("DELETE FROM cart_items WHERE id = ?").run(itemId);
-  db.prepare("UPDATE carts SET updated_at = ? WHERE id = ?")
-    .run(new Date().toISOString(), found.cart.id);
+  await sql`DELETE FROM cart_items WHERE id = ${itemId}`;
+  await sql`UPDATE carts SET updated_at = NOW() WHERE id = ${found.cart.id}`;
 
   return NextResponse.json({ ok: true });
 }

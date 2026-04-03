@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 type Params = { params: Promise<{ id: string }> };
@@ -20,13 +20,13 @@ export async function GET(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const zone = db.prepare("SELECT * FROM shipping_zones WHERE id = ?").get(id) as Record<string, unknown> | undefined;
-    if (!zone) {
+    const zones = await sql<Record<string, unknown>[]>`SELECT * FROM shipping_zones WHERE id = ${id}`;
+    if (zones.length === 0) {
       return NextResponse.json({ error: "Shipping zone not found" }, { status: 404 });
     }
 
-    const rates = db.prepare("SELECT * FROM shipping_rates WHERE zone_id = ?").all(id);
-    return NextResponse.json({ ...parseZone(zone), rates });
+    const rates = await sql`SELECT * FROM shipping_rates WHERE zone_id = ${id}`;
+    return NextResponse.json({ ...parseZone(zones[0]), rates });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -39,33 +39,30 @@ export async function PUT(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM shipping_zones WHERE id = ?").get(id);
-    if (!existing) {
+    const existing = await sql`SELECT id FROM shipping_zones WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Shipping zone not found" }, { status: 404 });
     }
 
     const body = await req.json() as Record<string, unknown>;
+    const countriesJson = body.countries !== undefined ? JSON.stringify(body.countries) : null;
 
-    db.prepare(`
+    await sql`
       UPDATE shipping_zones SET
-        name = COALESCE(?, name),
-        countries = COALESCE(?, countries)
-      WHERE id = ?
-    `).run(
-      body.name ?? null,
-      body.countries !== undefined ? JSON.stringify(body.countries) : null,
-      id,
-    );
+        name = COALESCE(${body.name as string | null ?? null}, name),
+        countries = COALESCE(${countriesJson}, countries)
+      WHERE id = ${id}
+    `;
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, "update", "shipping_zone", id,
       body as object,
       req.headers.get("x-forwarded-for") ?? ""
     );
 
-    const updated = db.prepare("SELECT * FROM shipping_zones WHERE id = ?").get(id) as Record<string, unknown>;
-    const rates = db.prepare("SELECT * FROM shipping_rates WHERE zone_id = ?").all(id);
-    return NextResponse.json({ ...parseZone(updated), rates });
+    const updated = await sql<Record<string, unknown>[]>`SELECT * FROM shipping_zones WHERE id = ${id}`;
+    const rates = await sql`SELECT * FROM shipping_rates WHERE zone_id = ${id}`;
+    return NextResponse.json({ ...parseZone(updated[0]), rates });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -78,14 +75,14 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM shipping_zones WHERE id = ?").get(id);
-    if (!existing) {
+    const existing = await sql`SELECT id FROM shipping_zones WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Shipping zone not found" }, { status: 404 });
     }
 
-    db.prepare("DELETE FROM shipping_zones WHERE id = ?").run(id);
+    await sql`DELETE FROM shipping_zones WHERE id = ${id}`;
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, "delete", "shipping_zone", id, {},
       req.headers.get("x-forwarded-for") ?? ""
     );
@@ -103,8 +100,8 @@ export async function POST(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM shipping_zones WHERE id = ?").get(id);
-    if (!existing) {
+    const existing = await sql`SELECT id FROM shipping_zones WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Shipping zone not found" }, { status: 404 });
     }
 
@@ -116,18 +113,17 @@ export async function POST(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: "name and price_cents are required" }, { status: 400 });
     }
 
-    const result = db.prepare(`
+    const [rate] = await sql<[Record<string, unknown>]>`
       INSERT INTO shipping_rates (zone_id, name, price_cents, estimated_days_min, estimated_days_max)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(
-      id,
-      body.name,
-      body.price_cents,
-      body.estimated_days_min ?? 1,
-      body.estimated_days_max ?? 7,
-    );
-
-    const rate = db.prepare("SELECT * FROM shipping_rates WHERE id = ?").get(result.lastInsertRowid);
+      VALUES (
+        ${id},
+        ${body.name as string},
+        ${body.price_cents as number},
+        ${body.estimated_days_min as number ?? 1},
+        ${body.estimated_days_max as number ?? 7}
+      )
+      RETURNING *
+    `;
     return NextResponse.json(rate, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

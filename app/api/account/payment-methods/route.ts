@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { db, getCustomerById } from "@/lib/db";
+import { sql, getCustomerById } from "@/lib/db";
 import { requireCustomer } from "@/lib/customer-guard";
 
 function getStripe() {
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   if (customer instanceof NextResponse) return customer;
 
   try {
-    const data = getCustomerById(customer.id);
+    const data = await getCustomerById(customer.id);
     if (!data?.stripe_customer_id) return NextResponse.json([]);
 
     const stripe = getStripe();
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     }
 
     const stripe = getStripe();
-    let data = getCustomerById(customer.id);
+    const data = await getCustomerById(customer.id);
     if (!data) return NextResponse.json({ error: "Customer not found" }, { status: 404 });
 
     let stripeCustomerId = data.stripe_customer_id;
@@ -51,8 +51,7 @@ export async function POST(req: NextRequest) {
         name: data.name ?? undefined,
       });
       stripeCustomerId = stripeCustomer.id;
-      db.prepare("UPDATE customers SET stripe_customer_id = ?, updated_at = ? WHERE id = ?")
-        .run(stripeCustomerId, new Date().toISOString(), customer.id);
+      await sql`UPDATE customers SET stripe_customer_id = ${stripeCustomerId}, updated_at = NOW() WHERE id = ${customer.id}`;
     }
 
     await stripe.paymentMethods.attach(body.payment_method_id, { customer: stripeCustomerId });

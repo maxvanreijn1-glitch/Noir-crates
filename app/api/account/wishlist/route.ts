@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { requireCustomer } from "@/lib/customer-guard";
 
 export async function GET(req: NextRequest) {
   const customer = await requireCustomer(req);
   if (customer instanceof NextResponse) return customer;
 
-  const wishlist = db.prepare("SELECT * FROM wishlists WHERE customer_id = ?").get(customer.id) as { id: number } | undefined;
+  const wishlists = await sql<{ id: number }[]>`SELECT id FROM wishlists WHERE customer_id = ${customer.id}`;
+  const wishlist = wishlists[0];
   if (!wishlist) return NextResponse.json([]);
 
-  const items = db.prepare(
-    "SELECT * FROM wishlist_items WHERE wishlist_id = ? ORDER BY added_at DESC"
-  ).all(wishlist.id);
+  const items = await sql`SELECT * FROM wishlist_items WHERE wishlist_id = ${wishlist.id} ORDER BY added_at DESC`;
   return NextResponse.json(items);
 }
 
@@ -29,25 +28,26 @@ export async function POST(req: NextRequest) {
     }
 
     // Ensure wishlist exists
-    let wishlist = db.prepare("SELECT * FROM wishlists WHERE customer_id = ?")
-      .get(customer.id) as { id: number } | undefined;
-    if (!wishlist) {
-      const res = db.prepare(
-        "INSERT INTO wishlists (customer_id, updated_at) VALUES (?, ?)"
-      ).run(customer.id, new Date().toISOString());
-      wishlist = { id: res.lastInsertRowid as number };
+    let wishlistRows = await sql<{ id: number }[]>`SELECT id FROM wishlists WHERE customer_id = ${customer.id}`;
+    let wishlistId: number;
+    if (wishlistRows.length === 0) {
+      const [newWl] = await sql<{ id: number }[]>`
+        INSERT INTO wishlists (customer_id, updated_at) VALUES (${customer.id}, NOW()) RETURNING id
+      `;
+      wishlistId = newWl.id;
+    } else {
+      wishlistId = wishlistRows[0].id;
     }
 
-    db.prepare(`
-      INSERT OR IGNORE INTO wishlist_items (wishlist_id, product_id, product_name, price_cents, image)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(wishlist.id, body.product_id, body.product_name, body.price_cents ?? 0, body.image ?? null);
+    await sql`
+      INSERT INTO wishlist_items (wishlist_id, product_id, product_name, price_cents, image)
+      VALUES (${wishlistId}, ${body.product_id}, ${body.product_name}, ${body.price_cents ?? 0}, ${body.image ?? null})
+      ON CONFLICT(wishlist_id, product_id) DO NOTHING
+    `;
 
-    db.prepare("UPDATE wishlists SET updated_at = ? WHERE id = ?")
-      .run(new Date().toISOString(), wishlist.id);
+    await sql`UPDATE wishlists SET updated_at = NOW() WHERE id = ${wishlistId}`;
 
-    const items = db.prepare("SELECT * FROM wishlist_items WHERE wishlist_id = ? ORDER BY added_at DESC")
-      .all(wishlist.id);
+    const items = await sql`SELECT * FROM wishlist_items WHERE wishlist_id = ${wishlistId} ORDER BY added_at DESC`;
     return NextResponse.json(items, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { requireCustomer } from "@/lib/customer-guard";
 
 export async function GET(req: NextRequest) {
   const customer = await requireCustomer(req);
   if (customer instanceof NextResponse) return customer;
 
-  const addresses = db.prepare(
-    "SELECT * FROM customer_addresses WHERE customer_id = ? ORDER BY id DESC"
-  ).all(customer.id);
+  const addresses = await sql`
+    SELECT * FROM customer_addresses WHERE customer_id = ${customer.id} ORDER BY id DESC
+  `;
   return NextResponse.json(addresses);
 }
 
@@ -27,24 +27,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "line1, city, postal_code, and country are required" }, { status: 400 });
     }
 
-    const result = db.prepare(`
+    const [address] = await sql<[Record<string, unknown>]>`
       INSERT INTO customer_addresses (customer_id, type, name, line1, line2, city, state, postal_code, country, is_default)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      customer.id,
-      type ?? "shipping",
-      name ?? null,
-      line1,
-      line2 ?? null,
-      city,
-      state ?? null,
-      postal_code,
-      country,
-      is_default ? 1 : 0
-    );
-
-    const address = db.prepare("SELECT * FROM customer_addresses WHERE id = ?")
-      .get(result.lastInsertRowid);
+      VALUES (
+        ${customer.id},
+        ${type ?? "shipping"},
+        ${name ?? null},
+        ${line1},
+        ${line2 ?? null},
+        ${city},
+        ${state ?? null},
+        ${postal_code},
+        ${country},
+        ${is_default ? true : false}
+      )
+      RETURNING *
+    `;
     return NextResponse.json(address, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 export async function GET(req: NextRequest) {
@@ -10,67 +10,38 @@ export async function GET(req: NextRequest) {
     const todayStr = new Date().toISOString().slice(0, 10);
     const monthStr = new Date().toISOString().slice(0, 7);
 
-    const totalRevenue = db.prepare(`
-      SELECT COALESCE(SUM(total_cents), 0) AS total
-      FROM orders WHERE status != 'cancelled'
-    `).get() as { total: number };
-
-    const totalOrders = db.prepare(`
-      SELECT COUNT(*) AS count FROM orders
-    `).get() as { count: number };
-
-    const ordersToday = db.prepare(`
-      SELECT COUNT(*) AS count FROM orders
-      WHERE date(created_at) = ?
-    `).get(todayStr) as { count: number };
-
-    const revenueToday = db.prepare(`
-      SELECT COALESCE(SUM(total_cents), 0) AS total
-      FROM orders WHERE date(created_at) = ? AND status != 'cancelled'
-    `).get(todayStr) as { total: number };
-
-    const topProducts = db.prepare(`
-      SELECT product_name, SUM(quantity) AS total_qty
-      FROM order_items
-      GROUP BY product_name
-      ORDER BY total_qty DESC
-      LIMIT 5
-    `).all();
-
-    const ordersByStatus = db.prepare(`
-      SELECT status, COUNT(*) AS count
-      FROM orders
-      GROUP BY status
-    `).all();
-
-    const revenueByDay = db.prepare(`
-      SELECT date(created_at) AS day, COALESCE(SUM(total_cents), 0) AS revenue_cents
-      FROM orders
-      WHERE status != 'cancelled'
-        AND created_at >= date('now', '-30 days')
-      GROUP BY day
-      ORDER BY day ASC
-    `).all();
-
-    const totalCustomers = db.prepare(`
-      SELECT COUNT(*) AS count FROM customers
-    `).get() as { count: number };
-
-    const newCustomersThisMonth = db.prepare(`
-      SELECT COUNT(*) AS count FROM customers
-      WHERE strftime('%Y-%m', created_at) = ?
-    `).get(monthStr) as { count: number };
+    const [
+      totalRevenueRow,
+      totalOrdersRow,
+      ordersTodayRow,
+      revenueTodayRow,
+      topProducts,
+      ordersByStatus,
+      revenueByDay,
+      totalCustomersRow,
+      newCustomersRow,
+    ] = await Promise.all([
+      sql<[{ total: string }]>`SELECT COALESCE(SUM(total_cents), 0)::bigint AS total FROM orders WHERE status != 'cancelled'`,
+      sql<[{ count: string }]>`SELECT COUNT(*) AS count FROM orders`,
+      sql<[{ count: string }]>`SELECT COUNT(*) AS count FROM orders WHERE DATE(created_at) = ${todayStr}`,
+      sql<[{ total: string }]>`SELECT COALESCE(SUM(total_cents), 0)::bigint AS total FROM orders WHERE DATE(created_at) = ${todayStr} AND status != 'cancelled'`,
+      sql`SELECT product_name, SUM(quantity)::bigint AS total_qty FROM order_items GROUP BY product_name ORDER BY total_qty DESC LIMIT 5`,
+      sql`SELECT status, COUNT(*)::bigint AS count FROM orders GROUP BY status`,
+      sql`SELECT DATE(created_at) AS day, COALESCE(SUM(total_cents), 0)::bigint AS revenue_cents FROM orders WHERE status != 'cancelled' AND created_at >= NOW() - INTERVAL '30 days' GROUP BY day ORDER BY day ASC`,
+      sql<[{ count: string }]>`SELECT COUNT(*) AS count FROM customers`,
+      sql<[{ count: string }]>`SELECT COUNT(*) AS count FROM customers WHERE TO_CHAR(created_at, 'YYYY-MM') = ${monthStr}`,
+    ]);
 
     return NextResponse.json({
-      total_revenue_cents: totalRevenue.total,
-      total_orders: totalOrders.count,
-      orders_today: ordersToday.count,
-      revenue_today_cents: revenueToday.total,
+      total_revenue_cents: parseInt(totalRevenueRow[0].total),
+      total_orders: parseInt(totalOrdersRow[0].count),
+      orders_today: parseInt(ordersTodayRow[0].count),
+      revenue_today_cents: parseInt(revenueTodayRow[0].total),
       top_products: topProducts,
       orders_by_status: ordersByStatus,
       revenue_by_day: revenueByDay,
-      total_customers: totalCustomers.count,
-      new_customers_this_month: newCustomersThisMonth.count,
+      total_customers: parseInt(totalCustomersRow[0].count),
+      new_customers_this_month: parseInt(newCustomersRow[0].count),
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

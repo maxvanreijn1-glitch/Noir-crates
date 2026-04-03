@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 type Params = { params: Promise<{ id: string }> };
@@ -10,14 +10,14 @@ export async function GET(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const product = db.prepare("SELECT * FROM products WHERE id = ?").get(id);
-    if (!product) {
+    const products = await sql`SELECT * FROM products WHERE id = ${id}`;
+    if (products.length === 0) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    const variants = db.prepare("SELECT * FROM product_variants WHERE product_id = ?").all(id);
+    const variants = await sql`SELECT * FROM product_variants WHERE product_id = ${id}`;
 
-    return NextResponse.json({ ...product as object, variants });
+    return NextResponse.json({ ...products[0], variants });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -30,52 +30,39 @@ export async function PUT(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM products WHERE id = ?").get(id);
-    if (!existing) {
+    const existing = await sql`SELECT id FROM products WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     const body = await req.json() as Record<string, unknown>;
-    const now = new Date().toISOString();
+    const inStock = body.in_stock !== undefined ? (body.in_stock ? true : false) : null;
 
-    db.prepare(`
+    await sql`
       UPDATE products SET
-        name = COALESCE(?, name),
-        slug = COALESCE(?, slug),
-        tagline = COALESCE(?, tagline),
-        description = COALESCE(?, description),
-        price_cents = COALESCE(?, price_cents),
-        compare_at_price_cents = COALESCE(?, compare_at_price_cents),
-        image = COALESCE(?, image),
-        category = COALESCE(?, category),
-        in_stock = COALESCE(?, in_stock),
-        stock_qty = COALESCE(?, stock_qty),
-        updated_at = ?
-      WHERE id = ?
-    `).run(
-      body.name ?? null,
-      body.slug ?? null,
-      body.tagline ?? null,
-      body.description ?? null,
-      body.price_cents ?? null,
-      body.compare_at_price_cents ?? null,
-      body.image ?? null,
-      body.category ?? null,
-      body.in_stock !== undefined ? (body.in_stock ? 1 : 0) : null,
-      body.stock_qty ?? null,
-      now,
-      id,
-    );
+        name = COALESCE(${body.name as string | null ?? null}, name),
+        slug = COALESCE(${body.slug as string | null ?? null}, slug),
+        tagline = COALESCE(${body.tagline as string | null ?? null}, tagline),
+        description = COALESCE(${body.description as string | null ?? null}, description),
+        price_cents = COALESCE(${body.price_cents as number | null ?? null}, price_cents),
+        compare_at_price_cents = COALESCE(${body.compare_at_price_cents as number | null ?? null}, compare_at_price_cents),
+        image = COALESCE(${body.image as string | null ?? null}, image),
+        category = COALESCE(${body.category as string | null ?? null}, category),
+        in_stock = COALESCE(${inStock}, in_stock),
+        stock_qty = COALESCE(${body.stock_qty as number | null ?? null}, stock_qty),
+        updated_at = NOW()
+      WHERE id = ${id}
+    `;
 
-    const updated = db.prepare("SELECT * FROM products WHERE id = ?").get(id);
+    const updated = await sql`SELECT * FROM products WHERE id = ${id}`;
 
-    createAuditLog(
+    await createAuditLog(
       admin.id, "update", "product", id,
       body as object,
       req.headers.get("x-forwarded-for") ?? ""
     );
 
-    return NextResponse.json(updated);
+    return NextResponse.json(updated[0]);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -88,8 +75,8 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     if (admin instanceof NextResponse) return admin;
 
     const { id } = await params;
-    const existing = db.prepare("SELECT * FROM products WHERE id = ?").get(id);
-    if (!existing) {
+    const existing = await sql`SELECT id FROM products WHERE id = ${id}`;
+    if (existing.length === 0) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
@@ -97,13 +84,12 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     const hard = searchParams.get("hard") === "true";
 
     if (hard) {
-      db.prepare("DELETE FROM products WHERE id = ?").run(id);
+      await sql`DELETE FROM products WHERE id = ${id}`;
     } else {
-      db.prepare("UPDATE products SET in_stock = 0, updated_at = ? WHERE id = ?")
-        .run(new Date().toISOString(), id);
+      await sql`UPDATE products SET in_stock = FALSE, updated_at = NOW() WHERE id = ${id}`;
     }
 
-    createAuditLog(
+    await createAuditLog(
       admin.id,
       hard ? "hard_delete" : "soft_delete",
       "product", id, {},

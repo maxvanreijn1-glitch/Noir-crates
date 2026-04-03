@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { db, createAuditLog } from "@/lib/db";
+import { sql, createAuditLog } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin-guard";
 
 export async function GET(req: NextRequest) {
@@ -8,9 +8,9 @@ export async function GET(req: NextRequest) {
     const admin = await requireAdmin(req, "admins:read");
     if (admin instanceof NextResponse) return admin;
 
-    const admins = db.prepare(
-      "SELECT id, email, name, role, is_active, created_at, updated_at FROM admin_users ORDER BY id DESC"
-    ).all();
+    const admins = await sql`
+      SELECT id, email, name, role, is_active, created_at, updated_at FROM admin_users ORDER BY id DESC
+    `;
     return NextResponse.json({ data: admins });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
@@ -35,27 +35,24 @@ export async function POST(req: NextRequest) {
 
     let roleName = "admin";
     if (role_id) {
-      const roleRow = db.prepare("SELECT name FROM admin_roles WHERE id = ?").get(role_id) as { name: string } | undefined;
-      if (!roleRow) {
+      const roles = await sql<{ name: string }[]>`SELECT name FROM admin_roles WHERE id = ${role_id as number}`;
+      if (roles.length === 0) {
         return NextResponse.json({ error: "Role not found" }, { status: 400 });
       }
-      roleName = roleRow.name;
+      roleName = roles[0].name;
     }
 
     const passwordHash = await bcrypt.hash(password as string, 12);
 
-    const result = db.prepare(`
+    const [created] = await sql<[Record<string, unknown>]>`
       INSERT INTO admin_users (email, password_hash, name, role, is_active)
-      VALUES (?, ?, ?, ?, 1)
-    `).run(email, passwordHash, name, roleName);
+      VALUES (${email as string}, ${passwordHash}, ${name as string}, ${roleName}, TRUE)
+      RETURNING id, email, name, role, is_active, created_at, updated_at
+    `;
 
-    const created = db.prepare(
-      "SELECT id, email, name, role, is_active, created_at, updated_at FROM admin_users WHERE id = ?"
-    ).get(result.lastInsertRowid);
-
-    createAuditLog(
+    await createAuditLog(
       admin.id, "create", "admin_user",
-      result.lastInsertRowid as number,
+      created.id as number,
       { email, name, role: roleName },
       req.headers.get("x-forwarded-for") ?? ""
     );

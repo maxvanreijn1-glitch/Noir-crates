@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const admin = getAdminById(payload.id);
+  const admin = await getAdminById(payload.id);
 
   if (!admin || !admin.is_active) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
