@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { verifyCustomerToken } from '@/lib/customer-auth';
+import LogoutButton from './LogoutButton';
 import styles from './layout.module.css';
 
 const navLinks = [
@@ -40,9 +41,9 @@ export default async function AccountLayout({
             </Link>
           ))}
         </nav>
-        <form action="/api/auth/logout" method="POST" className={styles.logoutForm}>
-          <button type="submit" className={styles.logoutBtn}>Sign Out</button>
-        </form>
+        <div className={styles.logoutWrap}>
+          <LogoutButton />
+        </div>
       </aside>
       <main className={styles.main}>{children}</main>
     </div>
