@@ -3,6 +3,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
 import CartDrawer from "@/components/CartDrawer";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Noir Crates — Mystery Collectible Boxes",
@@ -37,6 +38,7 @@ export default function RootLayout({
             </div>
           </footer>
         </CartProvider>
+        <Analytics />
         <style>{`
           .site-footer {
             background: var(--bg-card);
