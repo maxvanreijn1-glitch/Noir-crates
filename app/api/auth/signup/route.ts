@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
     const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${email_verify_token}`;
-    const emailOpts = emailVerificationEmail({ verifyUrl });
-    await sendEmail({ ...emailOpts, to: email });
+    const emailOpts = emailVerificationEmail({ verifyUrl, to: email });
+    await sendEmail(emailOpts);
 
     const token = await signCustomerToken({ id: customerId, email });
 

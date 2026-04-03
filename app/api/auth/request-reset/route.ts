@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
     const resetUrl = `${baseUrl}/account/reset-password?token=${reset_token}`;
-    const emailOpts = passwordResetEmail({ resetUrl });
-    await sendEmail({ ...emailOpts, to: email });
+    const emailOpts = passwordResetEmail({ resetUrl, to: email });
+    await sendEmail(emailOpts);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

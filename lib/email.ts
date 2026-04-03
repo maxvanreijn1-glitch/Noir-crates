@@ -26,12 +26,13 @@ export function orderConfirmationEmail(order: {
   customer_name: string | null;
   total_cents: number;
   items: { product_name: string; quantity: number; unit_price_cents: number }[];
+  to?: string;
 }): EmailOptions {
   const itemsHtml = order.items
     .map(i => `<tr><td>${i.product_name}</td><td>${i.quantity}</td><td>$${(i.unit_price_cents / 100).toFixed(2)}</td></tr>`)
     .join('');
   return {
-    to: '',
+    to: order.to ?? '',
     subject: `Order Confirmation — ${order.order_number}`,
     html: `
       <h1>Thank you for your order!</h1>
@@ -52,9 +53,10 @@ export function shippingUpdateEmail(opts: {
   carrier?: string;
   tracking_number?: string;
   status: string;
+  to?: string;
 }): EmailOptions {
   return {
-    to: '',
+    to: opts.to ?? '',
     subject: `Shipping Update — ${opts.order_number}`,
     html: `
       <h1>Shipping Update</h1>
@@ -66,9 +68,9 @@ export function shippingUpdateEmail(opts: {
   };
 }
 
-export function passwordResetEmail(opts: { resetUrl: string }): EmailOptions {
+export function passwordResetEmail(opts: { resetUrl: string; to?: string }): EmailOptions {
   return {
-    to: '',
+    to: opts.to ?? '',
     subject: 'Reset your Noir Crates password',
     html: `
       <h1>Password Reset</h1>
@@ -79,9 +81,9 @@ export function passwordResetEmail(opts: { resetUrl: string }): EmailOptions {
   };
 }
 
-export function emailVerificationEmail(opts: { verifyUrl: string }): EmailOptions {
+export function emailVerificationEmail(opts: { verifyUrl: string; to?: string }): EmailOptions {
   return {
-    to: '',
+    to: opts.to ?? '',
     subject: 'Verify your Noir Crates email',
     html: `
       <h1>Verify Your Email</h1>
