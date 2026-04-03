@@ -10,6 +10,7 @@ export interface Product {
   stripePrice?: string;
   contents: string[];
   badge?: string;
+  /** Category also doubles as the TCG game name for TCG products */
   category: string;
   inStock: boolean;
   createdAt: string; // ISO date string for "newest" sort
@@ -217,6 +218,260 @@ export const products: Product[] = [
     category: "Mystery Box",
     inStock: true,
     createdAt: "2024-11-10",
+  },
+
+  // ─── Blind Boxes ───────────────────────────────────────────────────────────
+  {
+    id: "urban-nights-blind-box",
+    slug: "urban-nights-blind-box",
+    name: "Urban Nights Blind Box",
+    tagline: "One figure. Infinite city vibes.",
+    description:
+      "Ten urban-inspired collectible figures capture the energy of city nights — neon signs, rooftop views, and street-level grit. Each single-figure blind box reveals one of ten designs, with one hidden limited chase variant.",
+    price: 1299,
+    priceDisplay: "$12.99",
+    image: "/images/mini.svg",
+    contents: [
+      "1 mystery urban figure (1 of 10 designs)",
+      "1 limited chase variant possible",
+      "Collector card",
+    ],
+    badge: "New",
+    category: "Blind Box",
+    inStock: true,
+    createdAt: "2025-02-15",
+  },
+  {
+    id: "neon-dreamscape-blind-box",
+    slug: "neon-dreamscape-blind-box",
+    name: "Neon Dreamscape Blind Box",
+    tagline: "Dream in colour, wake in surprise.",
+    description:
+      "Eight surreal dreamscape figures rendered in vivid neons and pastels. A single blind box holds one mystery figure — a pure unboxing moment, nothing more, nothing less.",
+    price: 999,
+    priceDisplay: "$9.99",
+    image: "/images/mini.svg",
+    contents: [
+      "1 mystery dreamscape figure (1 of 8 designs)",
+      "Collector card",
+    ],
+    category: "Blind Box",
+    inStock: true,
+    createdAt: "2025-02-10",
+  },
+  {
+    id: "retro-arcade-blind-box",
+    slug: "retro-arcade-blind-box",
+    name: "Retro Arcade Blind Box",
+    tagline: "Insert coin. Receive joy.",
+    description:
+      "Twelve pixel-art-inspired figures celebrate the golden age of arcades. Bold shapes, retro colours, and one secret rare variant hiding in the set.",
+    price: 1199,
+    priceDisplay: "$11.99",
+    image: "/images/studio.svg",
+    contents: [
+      "1 mystery retro figure (1 of 12 designs)",
+      "1 secret rare possible",
+      "Collector card",
+    ],
+    category: "Blind Box",
+    inStock: true,
+    createdAt: "2025-02-05",
+  },
+  {
+    id: "celestial-bloom-blind-box",
+    slug: "celestial-bloom-blind-box",
+    name: "Celestial Bloom Blind Box",
+    tagline: "Stars blooming in every box.",
+    description:
+      "Eight celestial garden figures blend cosmic imagery with delicate florals. Soft metallics, fine detailing, and a meditative single-figure unboxing experience.",
+    price: 1399,
+    priceDisplay: "$13.99",
+    image: "/images/studio.svg",
+    contents: [
+      "1 mystery celestial figure (1 of 8 designs)",
+      "Collector card",
+      "Branded tissue wrap",
+    ],
+    badge: "Popular",
+    category: "Blind Box",
+    inStock: true,
+    createdAt: "2025-01-25",
+  },
+
+  // ─── Trading Card Games ────────────────────────────────────────────────────
+  {
+    id: "pokemon-tcg-booster-bundle",
+    slug: "pokemon-tcg-booster-bundle",
+    name: "Pokémon TCG Booster Bundle",
+    tagline: "Catch rare cards with every pack.",
+    description:
+      "Three booster packs from the latest Pokémon Trading Card Game set. Each pack contains 10 cards with a chance at Rare, Ultra Rare, and Secret Rare holographic cards. Perfect for collectors and players alike.",
+    price: 1499,
+    priceDisplay: "$14.99",
+    image: "/images/studio.svg",
+    contents: [
+      "3× Pokémon TCG booster packs (10 cards each)",
+      "Chance at holo rares and full-arts",
+      "Collector checklist card",
+    ],
+    badge: "Popular",
+    category: "Pokémon Trading Card Game",
+    inStock: true,
+    createdAt: "2025-03-10",
+  },
+  {
+    id: "magic-draft-booster",
+    slug: "magic-draft-booster",
+    name: "Magic: The Gathering Draft Booster",
+    tagline: "Build your deck. Rule the battlefield.",
+    description:
+      "One draft booster pack from the latest Magic: The Gathering expansion. Contains 15 cards including one guaranteed rare or mythic rare, perfect for drafting or expanding your collection.",
+    price: 499,
+    priceDisplay: "$4.99",
+    image: "/images/mini.svg",
+    contents: [
+      "15 Magic: The Gathering cards",
+      "1 guaranteed rare or mythic rare",
+      "1 full-art basic land possible",
+    ],
+    category: "Magic: The Gathering",
+    inStock: true,
+    createdAt: "2025-03-08",
+  },
+  {
+    id: "yugioh-booster-pack",
+    slug: "yugioh-booster-pack",
+    name: "Yu-Gi-Oh! Booster Pack",
+    tagline: "It's time to duel.",
+    description:
+      "One booster pack from the latest Yu-Gi-Oh! Trading Card Game set. Contains 9 cards with chances at Rare, Super Rare, Ultra Rare, and Secret Rare cards.",
+    price: 449,
+    priceDisplay: "$4.49",
+    image: "/images/mini.svg",
+    contents: [
+      "9 Yu-Gi-Oh! TCG cards",
+      "Chance at Ultra Rare and Secret Rare cards",
+      "Varied rarity distribution",
+    ],
+    category: "Yu-Gi-Oh! Trading Card Game",
+    inStock: true,
+    createdAt: "2025-03-05",
+  },
+  {
+    id: "one-piece-booster",
+    slug: "one-piece-booster",
+    name: "One Piece Card Game Booster",
+    tagline: "Set sail for adventure.",
+    description:
+      "One booster pack from the One Piece Card Game. Contains 12 cards from the latest set featuring your favourite characters from the world of One Piece.",
+    price: 449,
+    priceDisplay: "$4.49",
+    image: "/images/mini.svg",
+    contents: [
+      "12 One Piece Card Game cards",
+      "Chance at Leader and rare character cards",
+      "Full-art versions possible",
+    ],
+    category: "One Piece Card Game",
+    inStock: true,
+    createdAt: "2025-03-03",
+  },
+  {
+    id: "lorcana-booster-pack",
+    slug: "lorcana-booster-pack",
+    name: "Disney Lorcana Booster Pack",
+    tagline: "Magic, wonder, and rare glimmers.",
+    description:
+      "One booster pack from Disney Lorcana. Explore the magical world of Disney with 12 cards featuring beloved characters as Lorcana glimmers.",
+    price: 549,
+    priceDisplay: "$5.49",
+    image: "/images/studio.svg",
+    contents: [
+      "12 Disney Lorcana cards",
+      "1 guaranteed foil card",
+      "Chance at Enchanted rarity",
+    ],
+    badge: "New",
+    category: "Disney Lorcana",
+    inStock: true,
+    createdAt: "2025-03-01",
+  },
+  {
+    id: "star-wars-unlimited-booster",
+    slug: "star-wars-unlimited-booster",
+    name: "Star Wars: Unlimited Booster",
+    tagline: "The Force is in your hands.",
+    description:
+      "One booster pack from Star Wars: Unlimited. Features iconic Star Wars characters and moments across multiple eras of the galaxy far, far away.",
+    price: 499,
+    priceDisplay: "$4.99",
+    image: "/images/mini.svg",
+    contents: [
+      "16 Star Wars: Unlimited cards",
+      "1 guaranteed rare card",
+      "Foil and showcase variants possible",
+    ],
+    category: "Star Wars: Unlimited",
+    inStock: true,
+    createdAt: "2025-02-28",
+  },
+  {
+    id: "flesh-and-blood-booster",
+    slug: "flesh-and-blood-booster",
+    name: "Flesh and Blood Booster Pack",
+    tagline: "For heroes who rise to the challenge.",
+    description:
+      "One booster pack from the latest Flesh and Blood expansion. Features the intense hero-versus-hero combat that makes Flesh and Blood the premier competitive card game.",
+    price: 499,
+    priceDisplay: "$4.99",
+    image: "/images/midnight.svg",
+    contents: [
+      "16 Flesh and Blood cards",
+      "1 guaranteed rare or higher",
+      "Chance at Legendary or Fabled rarity",
+    ],
+    category: "Flesh and Blood",
+    inStock: true,
+    createdAt: "2025-02-25",
+  },
+  {
+    id: "digimon-booster-pack",
+    slug: "digimon-booster-pack",
+    name: "Digimon Card Game Booster",
+    tagline: "Digivolve your collection.",
+    description:
+      "One booster pack from the Digimon Card Game. Evolve your favourite Digimon partners and build powerful decks across multiple digital worlds.",
+    price: 449,
+    priceDisplay: "$4.49",
+    image: "/images/mini.svg",
+    contents: [
+      "12 Digimon Card Game cards",
+      "Chance at Rare, Super Rare, and Secret Rare cards",
+      "Parallel art variants possible",
+    ],
+    category: "Digimon Card Game",
+    inStock: true,
+    createdAt: "2025-02-22",
+  },
+  {
+    id: "dragon-ball-super-booster",
+    slug: "dragon-ball-super-booster",
+    name: "Dragon Ball Super Booster Pack",
+    tagline: "Power up your collection.",
+    description:
+      "One booster pack from the Dragon Ball Super Card Game. Features iconic characters and moments from across the Dragon Ball universe.",
+    price: 449,
+    priceDisplay: "$4.49",
+    image: "/images/midnight.svg",
+    contents: [
+      "12 Dragon Ball Super Card Game cards",
+      "1 guaranteed Rare card",
+      "Chance at Special Rare and Secret Rare",
+    ],
+    category: "Dragon Ball Super Card Game",
+    inStock: true,
+    createdAt: "2025-02-20",
   },
 ];
 

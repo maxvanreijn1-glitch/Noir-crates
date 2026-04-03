@@ -4,7 +4,7 @@ import CollectionClient from "./CollectionClient";
 export const metadata: Metadata = {
   title: "Blind Boxes — Noir Crates",
   description:
-    "Browse our full collection of mystery blind box figures. Filter by category, sort by price, and discover your next favourite collectible.",
+    "Browse our collection of single-figure blind boxes. Each box holds one mystery character from the series — a pure, simple unboxing experience.",
 };
 
 export default function BlindBoxesPage() {
