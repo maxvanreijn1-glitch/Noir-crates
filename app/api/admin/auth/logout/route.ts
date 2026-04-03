@@ -6,7 +6,7 @@ export async function POST() {
   response.cookies.set("admin_token", "", {
     httpOnly: true,
     sameSite: "lax",
-    path: "/admin",
+    path: "/",
     maxAge: 0,
   });
 

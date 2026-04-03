@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     response.cookies.set("admin_token", token, {
       httpOnly: true,
       sameSite: "lax",
-      path: "/admin",
+      path: "/",
       maxAge: 60 * 60 * 8, // 8 hours
       secure: process.env.NODE_ENV === "production",
     });

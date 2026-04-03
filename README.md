@@ -47,6 +47,31 @@ A full collection page modelled on standard e-commerce category pages:
 | stellar-night | Stellar Night | $32.99 | Premium | ✓ |
 | mossy-garden | Mossy Garden | $17.99 | Mystery Box | ✓ |
 
+## Admin Panel
+
+A full-featured admin area is available at `/admin`. It includes:
+
+- **Dashboard** — sales overview, revenue, orders by status, top products
+- **Products** — add/edit/delete products, manage stock
+- **Orders** — view all orders, update status, issue refunds/cancellations
+- **Customers** — view accounts, order history, addresses, ban/flag users, support notes
+- **Payments** — transaction history, payment status, fraud detection flags
+- **Shipping** — shipping zones & rates configuration
+- **Discounts** — coupon codes, percentage/fixed discounts
+- **Content** — homepage banners, blog posts, static pages
+- **Roles & Admins** — multiple admin accounts with role-based access
+- **Audit Logs** — activity log (who did what)
+- **Settings** — store info, payment config, email templates
+
+### Default Admin Credentials
+
+```
+Email:    admin@example.com   (set via ADMIN_SEED_EMAIL env var)
+Password: ChangeMe123!        (set via ADMIN_SEED_PASSWORD env var)
+```
+
+**⚠️ Change these credentials immediately after your first login.**
+
 ## Local Development
 
 ### 1. Install dependencies
@@ -60,11 +85,20 @@ Copy `.env.local.example` to `.env.local`:
 cp .env.local.example .env.local
 ```
 
-Fill in your Stripe API keys from https://dashboard.stripe.com/apikeys:
+Fill in your values (see `.env.local.example` for all options):
 ```
+# Stripe
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# App URL
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# Admin auth (change in production!)
+ADMIN_JWT_SECRET=change-me-to-a-long-random-string-at-least-32-chars
+ADMIN_SEED_EMAIL=admin@example.com
+ADMIN_SEED_PASSWORD=ChangeMe123!
 ```
 
 ### 3. Run dev server
@@ -72,7 +106,12 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 npm run dev
 ```
 
-Open http://localhost:3000.
+Open http://localhost:3000. The admin panel is at http://localhost:3000/admin.
+
+### 4. Database
+The admin system uses SQLite. The database is created automatically at `data/noir_admin.db` on first run. The seeded admin account is created during startup.
+
+To reset the admin database, delete `data/noir_admin.db` and restart the server.
 
 ## Stripe Configuration
 - Use **test mode** keys during development (prefix `pk_test_` and `sk_test_`)
@@ -92,27 +131,35 @@ Open http://localhost:3000.
 ## Project Structure
 ```
 app/
-  layout.tsx          # Root layout with CartProvider, Navbar, Footer
-  page.tsx            # Home page with hero + product grid
+  layout.tsx              # Root layout with CartProvider, Navbar, Footer
+  page.tsx                # Home page with hero + product grid
   page.module.css
-  globals.css         # Design tokens + base styles
-  products/[slug]/    # Dynamic product detail pages
-  api/checkout/       # Stripe Checkout session API route
-  success/            # Order success page
-  cancel/             # Checkout cancelled page
-  about/              # About page
-  faq/                # FAQ page
+  globals.css             # Design tokens + base styles
+  products/[slug]/        # Dynamic product detail pages
+  api/checkout/           # Stripe Checkout session API route
+  api/webhooks/stripe/    # Stripe webhook handler (order/payment creation)
+  api/admin/              # Admin REST API (auth, products, orders, customers, etc.)
+  admin/                  # Admin UI pages (login, dashboard, products, orders, etc.)
+  success/                # Order success page
+  cancel/                 # Checkout cancelled page
+  about/                  # About page
+  faq/                    # FAQ page
 components/
-  Navbar.tsx          # Sticky navbar with cart icon
-  CartDrawer.tsx      # Slide-in cart drawer
-  ProductCard.tsx     # Product grid card
-  AddToCartButton.tsx # Add to cart button (client component)
-  Logo.tsx            # Brand logo SVG component
+  Navbar.tsx              # Sticky navbar with cart icon
+  CartDrawer.tsx          # Slide-in cart drawer
+  ProductCard.tsx         # Product grid card
+  AddToCartButton.tsx     # Add to cart button (client component)
+  Logo.tsx                # Brand logo SVG component
 context/
-  CartContext.tsx     # Client-side cart state
+  CartContext.tsx         # Client-side cart state
 lib/
-  products.ts         # Product data and types
-  env.ts              # Environment variable helpers
+  products.ts             # Product data and types
+  env.ts                  # Environment variable helpers
+  db.ts                   # SQLite database (better-sqlite3) + schema
+  auth.ts                 # JWT utilities (jose)
+  admin-guard.ts          # Admin route protection middleware
+data/
+  noir_admin.db           # SQLite database (auto-created, gitignored)
 public/
-  images/             # Product placeholder SVG images
+  images/                 # Product placeholder SVG images
 ```
