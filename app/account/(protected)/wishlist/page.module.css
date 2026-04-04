@@ -65,7 +65,7 @@
   cursor: pointer;
   transition: background 0.15s;
 }
-.addBtn:hover:not(:disabled) { background: var(--primary-hover); }
+.addBtn:hover:not(:disabled) { background: var(--primary); }
 .addBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .removeBtn {

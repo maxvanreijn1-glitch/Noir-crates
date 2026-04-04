@@ -30,7 +30,7 @@
 }
 
 .card:hover {
-  border-color: var(--primary);
+  border-color: var(--dark);
   box-shadow: var(--shadow-md);
 }
 

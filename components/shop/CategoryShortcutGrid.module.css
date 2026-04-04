@@ -6,23 +6,24 @@
 }
 
 .pill {
-  padding: 8px 18px;
+  padding: 7px 18px;
   background: var(--bg-card);
-  border: 1.5px solid var(--border);
-  border-radius: 99px;
-  font-size: 0.82rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
   font-weight: 500;
-  color: var(--text);
-  letter-spacing: 0.02em;
+  color: var(--text-light);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   transition: border-color 0.18s, background 0.18s, color 0.18s, transform 0.12s;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .pill:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: #fff0f3;
+  border-color: var(--dark);
+  color: var(--dark);
+  background: var(--bg);
   transform: translateY(-1px);
 }
 
@@ -31,14 +32,14 @@
 }
 
 .pill.active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
-  font-weight: 600;
+  background: var(--dark);
+  border-color: var(--dark);
+  color: #FDFCF8;
+  font-weight: 500;
 }
 
 .pill.active:hover {
-  background: var(--primary-hover);
-  border-color: var(--primary-hover);
-  color: #fff;
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #0E0E0E;
 }

@@ -3,7 +3,7 @@
 }
 
 .heading {
-  font-family: "Cormorant Garamond", serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(1.3rem, 2.5vw, 1.7rem);
   font-weight: 500;
   color: var(--dark);
@@ -52,7 +52,7 @@
 
 .imageWrap {
   position: relative;
-  background: linear-gradient(135deg, #fceaf0 0%, #f8e0eb 100%);
+  background: #F0EDE8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,7 +93,7 @@
 .soldOutOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(42, 21, 32, 0.45);
+  background: rgba(14, 14, 14, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -148,18 +148,19 @@
 .addBtn {
   margin-top: auto;
   padding: 7px 0;
-  background: var(--primary);
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  background: var(--dark);
+  color: #FDFCF8;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   border-radius: var(--radius-sm);
   transition: background 0.2s;
   width: 100%;
 }
 
 .addBtn:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--primary);
 }
 
 .addBtn:disabled {

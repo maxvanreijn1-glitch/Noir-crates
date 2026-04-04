@@ -126,13 +126,13 @@
 }
 
 .input:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .btnPrimary {
   padding: 10px 20px;
-  background: var(--primary);
-  color: #fff;
+  background: var(--dark);
+  color: #FDFCF8;
   border: none;
   border-radius: var(--radius-sm);
   font-family: 'Inter', sans-serif;
@@ -144,7 +144,7 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--primary);
 }
 
 .btnPrimary:disabled {
@@ -174,13 +174,13 @@
 }
 
 .listItem:hover {
-  border-color: var(--primary);
-  background: #fdf8f9;
+  border-color: var(--dark);
+  background: var(--bg);
 }
 
 .listItemActive {
-  border-color: var(--primary);
-  background: #fdf0f3;
+  border-color: var(--dark);
+  background: var(--bg);
 }
 
 .listItemName {

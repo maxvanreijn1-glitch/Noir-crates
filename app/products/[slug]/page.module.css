@@ -1,14 +1,16 @@
 .page {
-  padding: 48px 0 80px;
+  padding: 52px 0 96px;
 }
 
 .breadcrumb {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--text-light);
-  margin-bottom: 40px;
+  margin-bottom: 48px;
 }
 
 .breadcrumb a:hover {
@@ -18,14 +20,14 @@
 .layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  gap: 72px;
   align-items: start;
 }
 
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 36px;
   }
 }
 
@@ -34,75 +36,79 @@
 }
 
 .imageWrap {
-  background: linear-gradient(135deg, #EDE8DF 0%, #E8F0EC 100%);
-  border-radius: var(--radius-lg);
-  padding: 48px;
+  background: #F0EDE8;
+  border-radius: var(--radius-md);
+  padding: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 360px;
+  min-height: 400px;
 }
 
 .badge {
   position: absolute;
   top: 16px;
   left: 16px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  background: var(--dark);
+  color: var(--gold-light);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 6px 14px;
-  border-radius: 99px;
+  border-radius: var(--radius-sm);
 }
 
 .infoSection {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding-top: 12px;
+  gap: 18px;
+  padding-top: 8px;
 }
 
 .tagline {
-  font-size: 0.85rem;
-  color: var(--muted);
-  font-style: italic;
-  letter-spacing: 0.03em;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
 }
 
 .name {
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
-  font-weight: 400;
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
+  font-weight: 300;
   color: var(--dark);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
 }
 
 .price {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--primary);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--dark);
+  letter-spacing: 0.01em;
 }
 
 .description {
   font-size: 0.95rem;
-  color: var(--text);
-  line-height: 1.75;
+  color: var(--text-light);
+  line-height: 1.8;
 }
 
 .contents {
-  background: var(--bg-card);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 20px;
+  padding: 22px;
 }
 
 .contents h3 {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .contents ul {
@@ -116,7 +122,7 @@
   font-size: 0.9rem;
   color: var(--text);
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .contents li span {
@@ -131,6 +137,9 @@
 .actions button {
   width: 100%;
   padding: 16px 24px;
-  font-size: 1rem;
-  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
 }

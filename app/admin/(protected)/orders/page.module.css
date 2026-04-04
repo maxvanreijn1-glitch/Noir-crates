@@ -41,7 +41,7 @@
 }
 
 .select:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .tableWrap {
@@ -66,7 +66,7 @@
   color: var(--text-light);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #fdf0f3;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -82,7 +82,7 @@
 }
 
 .table tr:hover td {
-  background: #fdf8f9;
+  background: var(--bg);
 }
 
 .bold {
@@ -119,13 +119,13 @@
   font-size: 0.8rem;
   font-weight: 500;
   text-decoration: none;
-  background: rgba(196, 96, 122, 0.08);
+  background: rgba(139, 32, 32, 0.06);
   color: var(--primary);
   transition: background 0.2s;
 }
 
 .linkBtn:hover {
-  background: rgba(196, 96, 122, 0.16);
+  background: rgba(139, 32, 32, 0.12);
 }
 
 .pagination {
@@ -149,7 +149,7 @@
 }
 
 .pageBtn:hover:not(:disabled) {
-  border-color: var(--primary);
+  border-color: var(--dark);
   color: var(--primary);
 }
 

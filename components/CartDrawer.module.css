@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(61, 53, 48, 0.35);
+  background: rgba(14,14,14,0.5);
   z-index: 200;
   animation: fadeIn 0.2s ease;
 }
@@ -35,14 +35,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px;
+  padding: 24px 24px 20px;
   border-bottom: 1px solid var(--border);
 }
 
 .title {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 400;
   color: var(--dark);
+  letter-spacing: 0.04em;
 }
 
 .closeBtn {
@@ -68,7 +70,7 @@
   justify-content: center;
   gap: 8px;
   color: var(--text-light);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   text-align: center;
   padding: 24px;
 }
@@ -80,7 +82,7 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .item {
@@ -88,6 +90,7 @@
   align-items: center;
   gap: 12px;
   background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 12px;
 }
@@ -97,7 +100,7 @@
   width: 60px;
   height: 60px;
   border-radius: var(--radius-sm);
-  background: var(--bg-card);
+  background: #F0EDE8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,16 +113,18 @@
 }
 
 .itemName {
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 400;
   color: var(--dark);
   margin-bottom: 2px;
 }
 
 .itemPrice {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-light);
   margin-bottom: 8px;
+  letter-spacing: 0.03em;
 }
 
 .qtyRow {
@@ -131,7 +136,7 @@
 .qtyBtn {
   width: 24px;
   height: 24px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--border);
   color: var(--dark);
   font-size: 1rem;
@@ -142,8 +147,8 @@
 }
 
 .qtyBtn:hover {
-  background: var(--muted);
-  color: #fff;
+  background: var(--dark);
+  color: #FDFCF8;
 }
 
 .qty {
@@ -159,13 +164,13 @@
   align-items: center;
   justify-content: center;
   padding: 4px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   transition: color 0.2s;
   flex-shrink: 0;
 }
 
 .removeBtn:hover {
-  color: #c0675a;
+  color: #8B2020;
 }
 
 .footer {
@@ -180,13 +185,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.totalRow strong {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.2rem;
   font-weight: 500;
-  font-size: 1rem;
   color: var(--dark);
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .error {
-  color: #c0675a;
+  color: #8B2020;
   font-size: 0.85rem;
   text-align: center;
 }
@@ -194,17 +209,18 @@
 .checkoutBtn {
   width: 100%;
   padding: 14px;
-  background: var(--primary);
-  color: #fff;
-  font-size: 0.95rem;
+  background: var(--dark);
+  color: #FDFCF8;
+  font-size: 0.78rem;
   font-weight: 500;
-  border-radius: var(--radius-md);
-  letter-spacing: 0.02em;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   transition: background 0.2s, transform 0.1s;
 }
 
 .checkoutBtn:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--primary);
 }
 
 .checkoutBtn:active:not(:disabled) {
@@ -212,7 +228,7 @@
 }
 
 .checkoutBtn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -220,11 +236,12 @@
   width: 100%;
   padding: 10px;
   color: var(--text-light);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
   text-align: center;
   transition: color 0.2s;
 }
 
 .clearBtn:hover {
-  color: var(--muted);
+  color: var(--dark);
 }

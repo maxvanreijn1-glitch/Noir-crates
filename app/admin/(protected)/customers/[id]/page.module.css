@@ -79,7 +79,7 @@
 }
 
 .input:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .addressGrid {
@@ -191,7 +191,7 @@
 }
 
 .textarea:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .noteList {
@@ -225,8 +225,8 @@
 
 .btnPrimary {
   padding: 10px 20px;
-  background: var(--primary);
-  color: #fff;
+  background: var(--dark);
+  color: #FDFCF8;
   border: none;
   border-radius: var(--radius-sm);
   font-family: 'Inter', sans-serif;
@@ -238,7 +238,7 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--primary);
 }
 
 .btnPrimary:disabled {
@@ -303,7 +303,7 @@
 }
 
 .backBtn:hover {
-  border-color: var(--primary);
+  border-color: var(--dark);
   color: var(--primary);
 }
 

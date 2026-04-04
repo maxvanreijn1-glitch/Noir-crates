@@ -1,16 +1,12 @@
 .banner {
   width: 100%;
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--sakura-mid) 55%,
-    var(--sakura-light) 100%
-  );
-  border-radius: var(--radius-lg);
+  background: var(--bg-dark);
+  border-radius: var(--radius-md);
   padding: 64px 48px;
   margin: 32px 0;
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--border-dark);
 }
 
 .banner::before {
@@ -44,10 +40,10 @@
 }
 
 .title {
-  font-family: "Cormorant Garamond", serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(2rem, 5vw, 3.2rem);
-  font-weight: 600;
-  color: #fff;
+  font-weight: 300;
+  color: #FDFCF8;
   line-height: 1.15;
   margin-bottom: 14px;
   letter-spacing: 0.01em;
@@ -55,7 +51,7 @@
 
 .subtitle {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(253, 252, 248, 0.55);
   line-height: 1.7;
   margin-bottom: 32px;
   max-width: 440px;
@@ -69,11 +65,12 @@
 
 .btnPrimary {
   padding: 13px 28px;
-  background: #fff;
-  color: var(--primary);
-  font-size: 0.875rem;
+  background: var(--primary);
+  color: #0E0E0E;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   border-radius: var(--radius-sm);
   transition: background 0.2s, transform 0.15s;
   white-space: nowrap;
@@ -81,27 +78,29 @@
 }
 
 .btnPrimary:hover {
-  background: var(--bg);
+  background: var(--primary-hover);
   transform: translateY(-1px);
 }
 
 .btnSecondary {
   padding: 13px 28px;
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  background: transparent;
+  color: rgba(253,252,248,0.6);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255,255,255,0.15);
   transition: background 0.2s, transform 0.15s;
   white-space: nowrap;
   display: inline-block;
 }
 
 .btnSecondary:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.07);
   transform: translateY(-1px);
+  color: rgba(253,252,248,0.85);
 }
 
 @media (max-width: 600px) {

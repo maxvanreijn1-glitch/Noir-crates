@@ -7,7 +7,7 @@
 .sidebar {
   width: 220px;
   flex-shrink: 0;
-  background: var(--dark);
+  background: var(--bg-dark);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -15,27 +15,29 @@
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  border-right: 1px solid var(--border-dark);
 }
 
 .sidebarHeader {
-  padding: 24px 20px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 28px 22px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
 .sidebarTitle {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: 0.02em;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #FDFCF8;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .sidebarEmail {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.35);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -50,41 +52,44 @@
 
 .navLink {
   display: block;
-  padding: 10px 20px;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 0.875rem;
+  padding: 10px 22px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
 }
 
 .navLink:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .logoutWrap {
-  padding: 16px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .logoutBtn {
   width: 100%;
   padding: 10px;
-  background: rgba(196, 96, 122, 0.2);
-  border: 1px solid rgba(196, 96, 122, 0.3);
+  background: rgba(184, 146, 42, 0.1);
+  border: 1px solid rgba(184, 146, 42, 0.2);
   border-radius: var(--radius-sm);
-  color: var(--sakura-mid);
-  font-size: 0.875rem;
+  color: var(--gold-mid);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .logoutBtn:hover {
-  background: rgba(196, 96, 122, 0.35);
+  background: rgba(184, 146, 42, 0.2);
 }
 
 .main {
   flex: 1;
-  padding: 32px;
+  padding: 36px;
   overflow-y: auto;
 }

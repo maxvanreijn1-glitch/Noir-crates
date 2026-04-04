@@ -68,7 +68,7 @@
 
 .input:focus,
 .textarea:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .textarea {
@@ -87,7 +87,7 @@
 }
 
 .inputPrefix:focus-within {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .prefix {
@@ -135,8 +135,8 @@
 
 .btnPrimary {
   padding: 12px 28px;
-  background: var(--primary);
-  color: #fff;
+  background: var(--dark);
+  color: #FDFCF8;
   border: none;
   border-radius: var(--radius-sm);
   font-family: 'Inter', sans-serif;
@@ -147,7 +147,7 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--primary);
 }
 
 .btnPrimary:disabled {
@@ -169,7 +169,7 @@
 }
 
 .backBtn:hover {
-  border-color: var(--primary);
+  border-color: var(--dark);
   color: var(--primary);
 }
 
@@ -266,7 +266,7 @@
 }
 
 .attrInput:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .attrRemoveBtn {
@@ -298,6 +298,6 @@
 }
 
 .btnSecondary:hover {
-  border-color: var(--primary);
+  border-color: var(--dark);
   color: var(--primary);
 }

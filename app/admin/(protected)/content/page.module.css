@@ -3,51 +3,60 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.75rem;
-  font-weight: 600;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 400;
   color: var(--dark);
+  letter-spacing: -0.01em;
 }
 
 .sub {
   color: var(--text-light);
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   margin-top: 4px;
 }
 
 .tabs {
   display: flex;
-  gap: 4px;
-  margin-bottom: 24px;
+  gap: 0;
+  margin-bottom: 28px;
   border-bottom: 1px solid var(--border);
-  padding-bottom: 0;
 }
 
 .tab {
-  padding: 10px 20px;
+  padding: 10px 22px;
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
   color: var(--text-light);
   font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
+  font-size: 0.78rem;
   font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
   margin-bottom: -1px;
+  outline: none;
 }
 
 .tab:hover {
-  color: var(--primary);
+  color: var(--dark);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
 }
 
 .tabActive {
-  color: var(--primary) !important;
-  border-bottom-color: var(--primary) !important;
+  color: var(--dark) !important;
+  border-bottom-color: var(--dark) !important;
 }
 
 .card {
@@ -92,7 +101,7 @@
 }
 
 .input:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .textarea {
@@ -109,7 +118,7 @@
 }
 
 .textarea:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .tableWrap {
@@ -134,7 +143,7 @@
   color: var(--text-light);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #fdf0f3;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -150,7 +159,7 @@
 }
 
 .table tr:hover td {
-  background: #fdf8f9;
+  background: var(--bg);
 }
 
 .bold {
@@ -208,8 +217,8 @@
 
 .btnPrimary {
   padding: 10px 20px;
-  background: var(--primary);
-  color: #fff;
+  background: var(--dark);
+  color: #FDFCF8;
   border: none;
   border-radius: var(--radius-sm);
   font-family: 'Inter', sans-serif;
@@ -221,7 +230,7 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--primary);
 }
 
 .btnPrimary:disabled {

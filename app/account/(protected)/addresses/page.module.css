@@ -42,7 +42,7 @@
   display: inline-block;
   margin-top: 6px;
   font-size: 0.7rem;
-  background: rgba(196, 96, 122, 0.1);
+  background: rgba(184, 146, 42, 0.1);
   color: var(--primary);
   padding: 2px 8px;
   border-radius: 100px;
@@ -69,11 +69,11 @@
 .btnEdit:hover { background: var(--border); }
 
 .btnDelete {
-  border-color: rgba(196, 96, 122, 0.3);
+  border-color: rgba(139, 32, 32, 0.2);
   color: var(--primary);
 }
 
-.btnDelete:hover { background: rgba(196, 96, 122, 0.08); }
+.btnDelete:hover { background: rgba(139, 32, 32, 0.06); }
 
 .formCard {
   background: var(--bg-card);
@@ -128,7 +128,7 @@
   width: 100%;
 }
 
-.input:focus { border-color: var(--primary); }
+.input:focus { border-color: var(--dark); }
 
 .formActions {
   display: flex;
@@ -150,7 +150,7 @@
   transition: background 0.2s;
 }
 
-.btn:hover:not(:disabled) { background: var(--primary-hover); }
+.btn:hover:not(:disabled) { background: var(--primary); }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .btnCancel {
@@ -167,8 +167,8 @@
 .btnCancel:hover { background: var(--border); }
 
 .error {
-  background: rgba(196, 96, 122, 0.08);
-  border: 1px solid rgba(196, 96, 122, 0.3);
+  background: rgba(139, 32, 32, 0.06);
+  border: 1px solid rgba(139, 32, 32, 0.2);
   color: var(--primary);
   padding: 10px 14px;
   border-radius: var(--radius-sm);
