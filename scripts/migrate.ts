@@ -12,6 +12,7 @@
 
 import postgres from "postgres";
 import bcrypt from "bcryptjs";
+import "dotenv/config";
 
 const url = process.env.DATABASE_URL;
 if (!url) {
