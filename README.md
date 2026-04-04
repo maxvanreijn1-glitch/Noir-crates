@@ -177,13 +177,16 @@ npm install
 ```
 
 ### 2. Configure environment variables
-Copy `.env.local.example` to `.env.local`:
+Copy `.env.example` to `.env.local`:
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
-Fill in your values (see `.env.local.example` for all options):
+Fill in your values (see `.env.example` for all options):
 ```
+# Database (Supabase Postgres)
+DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
+
 # Stripe
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
@@ -204,17 +207,30 @@ CUSTOMER_JWT_SECRET=change-me-customer-jwt-secret-at-least-32-chars
 EMAIL_FROM=noreply@noir-crates.com
 ```
 
-### 3. Run dev server
+### 3. Run the database migration
+This creates all tables and seeds the initial super-admin account:
+```bash
+npm run db:migrate
+```
+Default credentials (override with env vars):
+- Email: `admin@example.com` (`ADMIN_SEED_EMAIL`)
+- Password: `ChangeMe123!` (`ADMIN_SEED_PASSWORD`)
+
+> **⚠️ Change the default password immediately after first login.**
+
+### 4. Run dev server
 ```bash
 npm run dev
 ```
 
 Open http://localhost:3000. The admin panel is at http://localhost:3000/admin.
 
-### 4. Database
-The admin system uses SQLite. The database is created automatically at `data/noir_admin.db` on first run. The seeded admin account is created during startup.
+### 5. Database
+The app uses **PostgreSQL** via [Supabase](https://supabase.com). All tables are created by the
+migration script (`npm run db:migrate`). The script is idempotent — safe to re-run.
 
-To reset the admin database, delete `data/noir_admin.db` and restart the server.
+To reset: delete all rows from `admin_users` in your Supabase dashboard, then re-run
+`npm run db:migrate`.
 
 ## Stripe Configuration
 - Use **test mode** keys during development (prefix `pk_test_` and `sk_test_`)
@@ -225,11 +241,23 @@ To reset the admin database, delete `data/noir_admin.db` and restart the server.
 
 1. Push your code to GitHub
 2. Import the repo in https://vercel.com
-3. Add environment variables in the Vercel project settings:
-   - `STRIPE_SECRET_KEY` = `sk_live_...`
-   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` = `pk_live_...`
-   - `NEXT_PUBLIC_BASE_URL` = `https://your-domain.vercel.app`
-4. Deploy
+3. Add the following environment variables in **Vercel Project Settings → Environment Variables**.
+   Set the **Build** scope on `DATABASE_URL`, `ADMIN_SEED_EMAIL`, and `ADMIN_SEED_PASSWORD` so the
+   migration can run at build time. Set the **Production** scope on the remaining runtime secrets.
+
+   | Variable | Scope | Example value |
+   |---|---|---|
+   | `DATABASE_URL` | Build + Production | `postgresql://postgres:...@db....supabase.co:5432/postgres` |
+   | `ADMIN_SEED_EMAIL` | Build | `admin@yourdomain.com` |
+   | `ADMIN_SEED_PASSWORD` | Build | `YourSecurePassword123!` |
+   | `ADMIN_JWT_SECRET` | Production | _(32+ random chars)_ |
+   | `CUSTOMER_JWT_SECRET` | Production | _(32+ random chars)_ |
+   | `STRIPE_SECRET_KEY` | Production | `sk_live_...` |
+   | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Production | `pk_live_...` |
+   | `NEXT_PUBLIC_BASE_URL` | Production | `https://your-domain.vercel.app` |
+
+4. Deploy. The `vercel.json` build command (`npm run db:migrate && next build`) automatically
+   runs the migration before building. The migration is idempotent — safe on every deploy.
 
 ## Project Structure
 ```
@@ -261,14 +289,12 @@ context/
 lib/
   products.ts             # Product data and types
   env.ts                  # Environment variable helpers
-  db.ts                   # SQLite database (better-sqlite3) + schema
+  db.ts                   # PostgreSQL client (postgres.js) + query helpers
   auth.ts                 # Admin JWT utilities (jose)
   admin-guard.ts          # Admin route protection middleware
   customer-auth.ts        # Customer JWT utilities
   customer-guard.ts       # Customer route protection middleware
   email.ts                # Email notification stubs
-data/
-  noir_admin.db           # SQLite database (auto-created, gitignored)
 public/
   images/                 # Product placeholder SVG images
 ```
