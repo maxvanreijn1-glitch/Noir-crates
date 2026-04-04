@@ -49,3 +49,8 @@ next-env.d.ts
 .env.local
 .env
 .env.*.local
+
+# local secrets
+.env.local
+.env
+.env.*.local
