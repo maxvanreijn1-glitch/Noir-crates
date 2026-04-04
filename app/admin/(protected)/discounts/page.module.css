@@ -8,7 +8,7 @@
 }
 
 .title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--dark);
@@ -30,7 +30,7 @@
 }
 
 .formTitle {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--dark);
@@ -70,7 +70,7 @@
 }
 
 .input:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .select {
@@ -86,7 +86,7 @@
 }
 
 .select:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .tableWrap {
@@ -111,7 +111,7 @@
   color: var(--text-light);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #fdf0f3;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -127,7 +127,7 @@
 }
 
 .table tr:hover td {
-  background: #fdf8f9;
+  background: var(--bg);
 }
 
 .code {
@@ -173,7 +173,7 @@
   border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 500;
-  background: rgba(196, 96, 122, 0.08);
+  background: rgba(139, 32, 32, 0.06);
   border: none;
   color: var(--primary);
   cursor: pointer;
@@ -181,7 +181,7 @@
 }
 
 .toggleBtn:hover {
-  background: rgba(196, 96, 122, 0.16);
+  background: rgba(139, 32, 32, 0.12);
 }
 
 .deleteBtn {
@@ -202,8 +202,8 @@
 
 .btnPrimary {
   padding: 10px 20px;
-  background: var(--primary);
-  color: #fff;
+  background: var(--dark);
+  color: #FDFCF8;
   border: none;
   border-radius: var(--radius-sm);
   font-family: 'Inter', sans-serif;
@@ -215,7 +215,7 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--primary);
 }
 
 .btnPrimary:disabled {
@@ -243,7 +243,7 @@
 }
 
 .pageBtn:hover:not(:disabled) {
-  border-color: var(--primary);
+  border-color: var(--dark);
   color: var(--primary);
 }
 

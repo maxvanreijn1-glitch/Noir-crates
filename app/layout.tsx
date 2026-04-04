@@ -39,12 +39,22 @@ export default function RootLayout({
           </footer>
         </CartProvider>
         <Analytics />
-        <style>{`
+          <style>{`
           .site-footer {
-            background: var(--bg-card);
-            border-top: 1px solid var(--border);
-            padding: 32px 0;
-            margin-top: 80px;
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border-dark);
+            padding: 40px 0;
+            margin-top: 0;
+            position: relative;
+          }
+          .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
           }
           .site-footer .container {
             display: flex;
@@ -54,20 +64,23 @@ export default function RootLayout({
             flex-wrap: wrap;
           }
           .site-footer p {
-            color: var(--text-light);
-            font-size: 0.875rem;
+            color: rgba(245,242,237,0.35);
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
           }
           .site-footer nav {
             display: flex;
-            gap: 24px;
+            gap: 28px;
           }
           .site-footer nav a {
-            color: var(--text-light);
-            font-size: 0.875rem;
+            color: rgba(245,242,237,0.45);
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
             transition: color 0.2s;
           }
           .site-footer nav a:hover {
-            color: var(--primary);
+            color: var(--gold-mid);
           }
         `}</style>
       </body>

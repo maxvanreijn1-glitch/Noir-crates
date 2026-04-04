@@ -5,9 +5,9 @@
 }
 
 .sidebar {
-  width: 240px;
+  width: 236px;
   flex-shrink: 0;
-  background: var(--dark);
+  background: var(--bg-dark);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -15,34 +15,36 @@
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  border-right: 1px solid var(--border-dark);
 }
 
 .sidebarHeader {
-  padding: 24px 24px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 28px 24px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
 .sidebarTitle {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: 0.02em;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: #FDFCF8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .sidebarAdmin {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.16em;
+  color: var(--gold-mid);
 }
 
 .nav {
   flex: 1;
-  padding: 12px 0;
+  padding: 10px 0;
   display: flex;
   flex-direction: column;
 }
@@ -52,19 +54,20 @@
   align-items: center;
   gap: 10px;
   padding: 10px 24px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
 }
 
 .navLink:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .navIcon {
-  font-size: 1rem;
+  font-size: 0.95rem;
   width: 20px;
   text-align: center;
   flex-shrink: 0;
@@ -73,13 +76,13 @@
 .main {
   flex: 1;
   overflow: auto;
-  padding: 32px 36px;
+  padding: 36px 40px;
   min-width: 0;
 }
 
 /* Shared page header used by child pages */
 .pageHeader {
-  margin-bottom: 28px;
+  margin-bottom: 32px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -88,14 +91,15 @@
 }
 
 .pageTitle {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.75rem;
-  font-weight: 600;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 400;
   color: var(--dark);
+  letter-spacing: -0.01em;
 }
 
 .pageSub {
   color: var(--text-light);
   margin-top: 4px;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
 }

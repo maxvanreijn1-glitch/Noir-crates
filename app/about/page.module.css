@@ -1,33 +1,34 @@
 .page {
-  padding: 64px 0 100px;
+  padding: 72px 0 112px;
 }
 
 .hero {
   text-align: center;
   max-width: 640px;
-  margin: 0 auto 80px;
+  margin: 0 auto 96px;
 }
 
 .eyebrow {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 16px;
-}
-
-.hero h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 300;
-  color: var(--dark);
+  color: var(--primary);
   margin-bottom: 20px;
 }
 
+.hero h1 {
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  font-weight: 300;
+  color: var(--dark);
+  margin-bottom: 24px;
+  letter-spacing: -0.01em;
+}
+
 .lead {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--text-light);
-  line-height: 1.75;
+  line-height: 1.8;
 }
 
 .content {
@@ -35,7 +36,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 56px;
+  gap: 64px;
 }
 
 .textBlock {
@@ -45,40 +46,43 @@
 }
 
 .textBlock h2 {
-  font-size: 1.2rem;
-  font-weight: 500;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 400;
   color: var(--dark);
+  letter-spacing: 0.01em;
 }
 
 .textBlock p {
   font-size: 0.95rem;
-  color: var(--text);
-  line-height: 1.8;
+  color: var(--text-light);
+  line-height: 1.85;
 }
 
 .values {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 24px;
+  gap: 20px;
 }
 
 .value {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 24px;
+  padding: 26px;
 }
 
 .value h3 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 8px;
-  letter-spacing: 0.04em;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--dark);
+  margin-bottom: 10px;
+  letter-spacing: 0.03em;
 }
 
 .value p {
   font-size: 0.85rem;
   color: var(--text-light);
-  line-height: 1.6;
+  line-height: 1.65;
 }

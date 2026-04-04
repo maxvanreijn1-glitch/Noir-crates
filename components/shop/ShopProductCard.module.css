@@ -1,6 +1,6 @@
 .card {
   background: var(--bg-card);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
@@ -12,7 +12,8 @@
 
 .card:hover {
   box-shadow: var(--shadow-md);
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+  border-color: var(--gold-mid);
 }
 
 .cardSoldOut {
@@ -57,7 +58,7 @@
 
 .imageWrap {
   position: relative;
-  background: linear-gradient(135deg, #fceaf0 0%, #f8e0eb 100%);
+  background: #F0EDE8;
   padding: 28px;
   display: flex;
   align-items: center;
@@ -70,7 +71,7 @@
 .soldOutOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(42, 21, 32, 0.42);
+  background: rgba(14, 14, 14, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,7 +93,7 @@
 .quickViewOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(42, 21, 32, 0.32);
+  background: rgba(14, 14, 14, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,8 +138,9 @@
 }
 
 .name {
-  font-size: 1rem;
-  font-weight: 600;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 400;
   color: var(--dark);
   line-height: 1.4;
   /* 2-line clamp */
@@ -175,8 +177,9 @@
 }
 
 .price {
-  font-size: 1.08rem;
-  font-weight: 700;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 400;
   color: var(--dark);
   white-space: nowrap;
 }

@@ -1,5 +1,5 @@
 .title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 2rem;
   color: var(--dark);
   margin-bottom: 24px;
@@ -65,7 +65,7 @@
   cursor: pointer;
   transition: background 0.15s;
 }
-.addBtn:hover:not(:disabled) { background: var(--primary-hover); }
+.addBtn:hover:not(:disabled) { background: var(--primary); }
 .addBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .removeBtn {

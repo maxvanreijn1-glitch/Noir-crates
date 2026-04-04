@@ -8,7 +8,7 @@
 }
 
 .title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--dark);
@@ -44,7 +44,7 @@
 }
 
 .searchInput:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .tableWrap {
@@ -69,7 +69,7 @@
   color: var(--text-light);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #fdf0f3;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -85,7 +85,7 @@
 }
 
 .table tr:hover td {
-  background: #fdf8f9;
+  background: var(--bg);
 }
 
 .bold {
@@ -153,8 +153,8 @@
 .btnPrimary {
   display: inline-block;
   padding: 10px 20px;
-  background: var(--primary);
-  color: #fff;
+  background: var(--dark);
+  color: #FDFCF8;
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   font-weight: 500;
@@ -164,7 +164,7 @@
 }
 
 .btnPrimary:hover {
-  background: var(--primary-hover);
+  background: var(--primary);
 }
 
 .btnSecondary {
@@ -180,7 +180,7 @@
 }
 
 .btnSecondary:hover {
-  border-color: var(--primary);
+  border-color: var(--dark);
   color: var(--primary);
 }
 
@@ -190,13 +190,13 @@
   font-size: 0.8rem;
   font-weight: 500;
   text-decoration: none;
-  background: rgba(196, 96, 122, 0.08);
+  background: rgba(139, 32, 32, 0.06);
   color: var(--primary);
   transition: background 0.2s;
 }
 
 .linkBtn:hover {
-  background: rgba(196, 96, 122, 0.16);
+  background: rgba(139, 32, 32, 0.12);
 }
 
 .deleteBtn {
@@ -236,7 +236,7 @@
 }
 
 .pageBtn:hover:not(:disabled) {
-  border-color: var(--primary);
+  border-color: var(--dark);
   color: var(--primary);
 }
 

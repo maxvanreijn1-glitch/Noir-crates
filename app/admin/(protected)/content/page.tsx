@@ -141,9 +141,33 @@ export default function ContentPage() {
         </div>
       </div>
 
-      <div className={styles.tabs}>
+      <div className={styles.tabs} role="tablist" aria-label="Content sections">
         {(['banners', 'pages', 'blog'] as Tab[]).map((t) => (
-          <button key={t} onClick={() => { setTab(t); setFormError(''); }} className={`${styles.tab} ${tab === t ? styles.tabActive : ''}`}>
+          <button
+            key={t}
+            role="tab"
+            aria-selected={tab === t}
+            aria-controls={`tabpanel-${t}`}
+            id={`tab-${t}`}
+            onClick={() => { setTab(t); setFormError(''); }}
+            className={`${styles.tab} ${tab === t ? styles.tabActive : ''}`}
+            tabIndex={tab === t ? 0 : -1}
+            onKeyDown={(e) => {
+              const tabs: Tab[] = ['banners', 'pages', 'blog'];
+              const idx = tabs.indexOf(t);
+              if (e.key === 'ArrowRight') {
+                const next = tabs[(idx + 1) % tabs.length];
+                setTab(next);
+                setFormError('');
+                (document.getElementById(`tab-${next}`) as HTMLButtonElement)?.focus();
+              } else if (e.key === 'ArrowLeft') {
+                const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+                setTab(prev);
+                setFormError('');
+                (document.getElementById(`tab-${prev}`) as HTMLButtonElement)?.focus();
+              }
+            }}
+          >
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -154,7 +178,7 @@ export default function ContentPage() {
 
       {/* ——— BANNERS ——— */}
       {tab === 'banners' && (
-        <div>
+        <div id="tabpanel-banners" role="tabpanel" aria-labelledby="tab-banners">
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>Add Banner</h2>
             <form onSubmit={handleAddBanner} className={styles.form}>
@@ -191,7 +215,7 @@ export default function ContentPage() {
 
       {/* ——— PAGES ——— */}
       {tab === 'pages' && (
-        <div>
+        <div id="tabpanel-pages" role="tabpanel" aria-labelledby="tab-pages">
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>Add Page</h2>
             <form onSubmit={handleAddPage} className={styles.form}>
@@ -227,7 +251,7 @@ export default function ContentPage() {
 
       {/* ——— BLOG ——— */}
       {tab === 'blog' && (
-        <div>
+        <div id="tabpanel-blog" role="tabpanel" aria-labelledby="tab-blog">
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>Add Blog Post</h2>
             <form onSubmit={handleAddPost} className={styles.form}>

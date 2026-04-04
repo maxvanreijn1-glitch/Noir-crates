@@ -7,7 +7,7 @@
 }
 
 .title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--dark);
@@ -40,7 +40,7 @@
 }
 
 .select:focus {
-  border-color: var(--primary);
+  border-color: var(--dark);
 }
 
 .fraudToggle {
@@ -79,7 +79,7 @@
   color: var(--text-light);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #fdf0f3;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -95,7 +95,7 @@
 }
 
 .table tr:hover td {
-  background: #fdf8f9;
+  background: var(--bg);
 }
 
 .mono {
@@ -166,7 +166,7 @@
 }
 
 .pageBtn:hover:not(:disabled) {
-  border-color: var(--primary);
+  border-color: var(--dark);
   color: var(--primary);
 }
 

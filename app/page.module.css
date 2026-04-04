@@ -4,90 +4,113 @@
 
 /* Hero */
 .hero {
-  padding: 100px 0 80px;
+  padding: 120px 0 100px;
   text-align: center;
-  background: linear-gradient(160deg, #FEF6F8 0%, #FCEAF0 55%, #F8E0EB 100%);
+  background: var(--bg-dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(184,146,42,0.12) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .heroSub {
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 20px;
+  color: var(--gold-mid);
+  margin-bottom: 28px;
 }
 
 .heroTitle {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: clamp(3rem, 7vw, 5.5rem);
   font-weight: 300;
-  color: var(--dark);
-  line-height: 1.15;
-  margin-bottom: 24px;
+  color: #FDFCF8;
+  line-height: 1.1;
+  margin-bottom: 28px;
 }
 
 .heroTitle em {
   font-style: italic;
-  color: var(--primary);
+  color: var(--gold-mid);
 }
 
 .heroBody {
-  font-size: 1.1rem;
-  color: var(--text-light);
-  line-height: 1.7;
-  max-width: 480px;
-  margin: 0 auto 40px;
+  font-size: 1rem;
+  color: rgba(253,252,248,0.55);
+  line-height: 1.8;
+  max-width: 440px;
+  margin: 0 auto 48px;
+  font-weight: 300;
 }
 
 .heroCta {
   display: inline-block;
-  padding: 16px 36px;
+  padding: 15px 40px;
   background: var(--primary);
-  color: #fff;
-  border-radius: var(--radius-xl);
-  font-size: 0.95rem;
+  color: #FDFCF8;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
   font-weight: 500;
-  letter-spacing: 0.03em;
-  transition: background 0.2s, transform 0.15s;
-  box-shadow: 0 4px 16px rgba(196,96,122,0.30);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+  box-shadow: 0 4px 20px rgba(184,146,42,0.35);
 }
 
 .heroCta:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(184,146,42,0.4);
 }
 
 /* Shop section */
 .shopSection {
-  padding: 80px 0;
+  padding: 96px 0;
 }
 
 .sectionTitle {
-  font-size: 1.6rem;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
   font-weight: 300;
   color: var(--dark);
-  margin-bottom: 48px;
+  margin-bottom: 56px;
   text-align: center;
   letter-spacing: 0.02em;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 24px;
 }
 
 /* Trust section */
 .trustSection {
-  padding: 80px 0;
-  background: var(--bg-card);
-  border-top: 1px solid var(--border);
+  padding: 96px 0;
+  background: var(--bg-dark);
+  position: relative;
+}
+
+.trustSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
 }
 
 .trustGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 40px;
+  gap: 48px;
   text-align: center;
 }
 
@@ -95,23 +118,25 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .trustIcon {
-  font-size: 2rem;
+  font-size: 1.6rem;
   margin-bottom: 4px;
 }
 
 .trustItem h3 {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--dark);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #FDFCF8;
+  letter-spacing: 0.04em;
 }
 
 .trustItem p {
-  font-size: 0.875rem;
-  color: var(--text-light);
-  line-height: 1.6;
+  font-size: 0.85rem;
+  color: rgba(253,252,248,0.5);
+  line-height: 1.7;
   max-width: 240px;
 }

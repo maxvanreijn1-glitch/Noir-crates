@@ -1,25 +1,28 @@
 .wrapper {
   padding: 16px 24px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .btn {
   width: 100%;
   padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.65);
+  background: rgba(184, 146, 42, 0.08);
+  border: 1px solid rgba(184, 146, 42, 0.18);
+  color: var(--gold-mid);
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   transition: background 0.15s, color 0.15s;
   text-align: left;
 }
 
 .btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  background: rgba(184, 146, 42, 0.18);
+  color: var(--gold-light);
 }
 
 .btn:disabled {

@@ -1,5 +1,5 @@
 .title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 2rem;
   color: var(--dark);
   margin-bottom: 8px;
@@ -30,7 +30,7 @@
 }
 
 .card:hover {
-  border-color: var(--primary);
+  border-color: var(--dark);
   box-shadow: var(--shadow-md);
 }
 
