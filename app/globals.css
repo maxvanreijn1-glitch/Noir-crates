@@ -97,6 +97,6 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Focus styles for accessibility */
 :focus-visible {
-  outline: 2px solid var(--primary);
+  outline: 2px solid var(--dark);
   outline-offset: 2px;
 }

@@ -8,7 +8,7 @@
 }
 
 .title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--dark);
@@ -37,7 +37,7 @@
 }
 
 .cardTitle {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--dark);
