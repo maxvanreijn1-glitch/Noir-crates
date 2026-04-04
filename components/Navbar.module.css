@@ -100,3 +100,73 @@
   justify-content: center;
   line-height: 1;
 }
+
+/* ─── Actions group ──────────────────────────────────────────── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ─── Shop dropdown ──────────────────────────────────────────── */
+.navDropdown {
+  position: relative;
+}
+
+.navDropdownTrigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.chevron {
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.navDropdownTrigger[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 200px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 8px 0;
+  z-index: 200;
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.dropdownItem {
+  display: block;
+  padding: 10px 18px;
+  font-size: 0.875rem;
+  color: var(--text);
+  transition: background 0.15s, color 0.15s;
+}
+
+.dropdownItem:hover {
+  background: var(--bg);
+  color: var(--primary);
+}
+
+.dropdownDivider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 6px 0;
+}

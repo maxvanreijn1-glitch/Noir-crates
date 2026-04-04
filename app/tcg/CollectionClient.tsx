@@ -1,30 +1,23 @@
 "use client";
 
 import { products } from "@/lib/products";
-import GenericCollectionClient from "@/components/CollectionClient";
+import { normalizeProducts } from "@/lib/shopUtils";
+import { TCG_SUBCATEGORIES } from "@/lib/shopTypes";
+import ShopCollectionClient from "@/components/shop/ShopCollectionClient";
 
-const TCG_GAMES = [
-  "Pokémon Japanese Booster Boxes",
-  "Magic: The Gathering",
-  "Yu-Gi-Oh! Trading Card Game",
-  "One Piece Card Game",
-  "Disney Lorcana",
-  "Star Wars: Unlimited",
-  "Flesh and Blood",
-  "Digimon Card Game",
-  "Dragon Ball Super Card Game",
-];
-
-const tcgProducts = products.filter((p) => TCG_GAMES.includes(p.category));
+const tcgProducts = normalizeProducts(
+  products.filter((p) => p.category === "TCG")
+);
 
 export default function TcgCollectionClient() {
   return (
-    <GenericCollectionClient
+    <ShopCollectionClient
       initialProducts={tcgProducts}
       title="Trading Card Games"
-      description="Booster packs and sets for all the major TCGs. Filter by game or browse the full range — Pokémon, Magic, Yu-Gi-Oh!, One Piece, Lorcana, and more."
+      description="Booster packs and sets for all the major TCGs — Pokémon, Yu-Gi-Oh!, One Piece, Lorcana, and more."
       breadcrumbLabel="TCG"
-      categoryLabel="Game"
+      subcategoryList={TCG_SUBCATEGORIES}
+      heroSubtitle="Build your collection. Chase the rarest pulls. New sets arriving regularly."
     />
   );
 }

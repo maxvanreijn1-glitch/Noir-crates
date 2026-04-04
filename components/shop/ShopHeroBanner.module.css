@@ -1,0 +1,120 @@
+.banner {
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--sakura-mid) 55%,
+    var(--sakura-light) 100%
+  );
+  border-radius: var(--radius-lg);
+  padding: 64px 48px;
+  margin: 32px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner::before {
+  content: "";
+  position: absolute;
+  top: -70px;
+  right: -70px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  pointer-events: none;
+}
+
+.banner::after {
+  content: "";
+  position: absolute;
+  bottom: -90px;
+  left: 25%;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+}
+
+.title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 14px;
+  letter-spacing: 0.01em;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  max-width: 440px;
+}
+
+.actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btnPrimary {
+  padding: 13px 28px;
+  background: #fff;
+  color: var(--primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.btnPrimary:hover {
+  background: var(--bg);
+  transform: translateY(-1px);
+}
+
+.btnSecondary {
+  padding: 13px 28px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.btnSecondary:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 600px) {
+  .banner {
+    padding: 40px 24px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btnPrimary,
+  .btnSecondary {
+    text-align: center;
+  }
+}
