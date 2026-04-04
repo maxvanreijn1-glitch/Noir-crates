@@ -3,7 +3,7 @@
 import { products } from "@/lib/products";
 import GenericCollectionClient from "@/components/CollectionClient";
 
-const blindBoxProducts = products.filter((p) => p.category === "Blind Box");
+const blindBoxProducts = products.filter((p) => p.category === "Blind Boxes");
 
 export default function CollectionClient() {
   return (
