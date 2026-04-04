@@ -1,11 +1,19 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 import { useCart } from "@/context/CartContext";
 import styles from "./Navbar.module.css";
 
+const SHOP_LINKS = [
+  { href: "/blind-boxes", label: "Blind Boxes" },
+  { href: "/tcg", label: "TCG" },
+  { href: "/mystery-crates", label: "Mystery Crates" },
+];
+
 export default function Navbar() {
   const { count, openCart } = useCart();
+  const [shopOpen, setShopOpen] = useState(false);
 
   return (
     <header className={styles.header}>
@@ -14,32 +22,126 @@ export default function Navbar() {
           <Logo size={30} />
           <span className={styles.brandName}>Noir Crates</span>
         </Link>
-        <nav className={styles.nav}>
-          <Link href="/" className={styles.navLink}>Shop</Link>
-          <Link href="/tcg" className={styles.navLink}>TCG</Link>
-          <Link href="/blind-boxes" className={styles.navLink}>Blind Boxes</Link>
-          <Link href="/mystery-crates" className={styles.navLink}>Mystery Crates</Link>
-          <Link href="/about" className={styles.navLink}>About</Link>
-          <Link href="/faq" className={styles.navLink}>FAQ</Link>
+
+        <nav className={styles.nav} aria-label="Main navigation">
+          <Link href="/" className={styles.navLink}>
+            Home
+          </Link>
+
+          {/* Shop dropdown */}
+          <div
+            className={styles.navDropdown}
+            onMouseEnter={() => setShopOpen(true)}
+            onMouseLeave={() => setShopOpen(false)}
+          >
+            <button
+              className={`${styles.navLink} ${styles.navDropdownTrigger}`}
+              aria-haspopup="true"
+              aria-expanded={shopOpen}
+            >
+              Shop
+              <svg
+                className={styles.chevron}
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            {shopOpen && (
+              <div className={styles.dropdownMenu} role="menu">
+                {SHOP_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={styles.dropdownItem}
+                    role="menuitem"
+                    onClick={() => setShopOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                <hr className={styles.dropdownDivider} />
+                <Link
+                  href="/blind-boxes?filter=new"
+                  className={styles.dropdownItem}
+                  role="menuitem"
+                  onClick={() => setShopOpen(false)}
+                >
+                  New Arrivals
+                </Link>
+                <Link
+                  href="/?section=sale"
+                  className={styles.dropdownItem}
+                  role="menuitem"
+                  onClick={() => setShopOpen(false)}
+                >
+                  Sale
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <Link href="/blind-boxes?filter=new" className={styles.navLink}>
+            New Arrivals
+          </Link>
+          <Link href="/about" className={styles.navLink}>
+            About
+          </Link>
+          <Link href="/faq" className={styles.navLink}>
+            FAQ
+          </Link>
         </nav>
-        <button
-          className={styles.cartBtn}
-          onClick={openCart}
-          aria-label={`Open cart, ${count} items`}
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            <path d="M16 10a4 4 0 0 1-8 0"/>
-          </svg>
-          {count > 0 && <span className={styles.badge}>{count}</span>}
-        </button>
-        <Link href="/account" className={styles.accountBtn} aria-label="My account">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-        </Link>
+
+        <div className={styles.actions}>
+          <button
+            className={styles.cartBtn}
+            onClick={openCart}
+            aria-label={`Open cart, ${count} items`}
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            {count > 0 && <span className={styles.badge}>{count}</span>}
+          </button>
+          <Link
+            href="/account"
+            className={styles.accountBtn}
+            aria-label="My account"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </Link>
+        </div>
       </div>
     </header>
   );
