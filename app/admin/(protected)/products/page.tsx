@@ -9,9 +9,13 @@ interface Product {
   name: string;
   slug: string;
   category: string;
+  category_name: string | null;
+  subcategory_name: string | null;
   price_cents: number;
   stock_qty: number;
   in_stock: number;
+  featured: boolean;
+  status: string;
 }
 
 interface PaginatedResponse {
@@ -19,6 +23,15 @@ interface PaginatedResponse {
   total: number;
   page: number;
   totalPages: number;
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, string> = {
+    active: styles.badgeGreen,
+    draft: styles.badgeYellow,
+    inactive: styles.badgeRed,
+  };
+  return <span className={map[status] ?? styles.badgeGray}>{status}</span>;
 }
 
 export default function ProductsPage() {
@@ -94,29 +107,30 @@ export default function ProductsPage() {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Category</th>
+              <th>Category / Subcategory</th>
               <th>Price</th>
               <th>Stock</th>
               <th>Status</th>
+              <th>Featured</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} className={styles.centered}>Loading…</td></tr>
+              <tr><td colSpan={7} className={styles.centered}>Loading…</td></tr>
             ) : products.length === 0 ? (
-              <tr><td colSpan={6} className={styles.centered}>No products found.</td></tr>
+              <tr><td colSpan={7} className={styles.centered}>No products found.</td></tr>
             ) : products.map((p) => (
               <tr key={p.id}>
                 <td className={styles.bold}>{p.name}</td>
-                <td>{p.category}</td>
+                <td>
+                  {p.category_name ?? p.category ?? '—'}
+                  {p.subcategory_name && <span className={styles.subcat}> / {p.subcategory_name}</span>}
+                </td>
                 <td>${(p.price_cents / 100).toFixed(2)}</td>
                 <td>{p.stock_qty ?? '—'}</td>
-                <td>
-                  <span className={p.in_stock ? styles.badgeGreen : styles.badgeRed}>
-                    {p.in_stock ? 'In Stock' : 'Out of Stock'}
-                  </span>
-                </td>
+                <td><StatusBadge status={p.status ?? 'active'} /></td>
+                <td>{p.featured ? '⭐' : '—'}</td>
                 <td className={styles.actions}>
                   <Link href={`/admin/products/${p.id}`} className={styles.linkBtn}>Edit</Link>
                   <button onClick={() => handleDelete(p.id)} className={styles.deleteBtn}>Delete</button>
@@ -141,3 +155,4 @@ export default function ProductsPage() {
     </div>
   );
 }
+
