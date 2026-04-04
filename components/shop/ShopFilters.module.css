@@ -1,0 +1,269 @@
+/* ─── Desktop sidebar ─────────────────────────────────────────── */
+.sidebar {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+/* ─── Shared filter content ───────────────────────────────────── */
+.filterContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.clearAll {
+  font-size: 0.78rem;
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s;
+}
+
+.clearAll:hover {
+  color: var(--primary-hover);
+}
+
+/* ─── Filter sections ─────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionHeading {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+/* ─── Sort select ─────────────────────────────────────────────── */
+.sortSelect {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  appearance: auto;
+}
+
+.sortSelect:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* ─── Checkboxes ──────────────────────────────────────────────── */
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.84rem;
+  color: var(--text);
+  cursor: pointer;
+  line-height: 1.5;
+  user-select: none;
+}
+
+.checkLabel:hover {
+  color: var(--dark);
+}
+
+.checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--primary);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* ─── Brand list (scrollable) ─────────────────────────────────── */
+.brandList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.brandList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.brandList::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+/* ─── Tag pills ───────────────────────────────────────────────── */
+.tagGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.tagPill {
+  padding: 5px 13px;
+  border-radius: 99px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-light);
+  font-size: 0.77rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, color 0.18s;
+}
+
+.tagPill:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.tagPillActive {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.tagPillActive:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: #fff;
+}
+
+/* ─── Mobile overlay ──────────────────────────────────────────── */
+.overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(42, 21, 32, 0.45);
+    z-index: 200;
+    animation: fadeIn 0.2s ease;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ─── Mobile drawer ───────────────────────────────────────────── */
+.drawer {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .drawer {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 300px;
+    max-width: 85vw;
+    height: 100dvh;
+    background: var(--bg);
+    z-index: 210;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .drawerOpen {
+    transform: translateX(0);
+  }
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.drawerTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.drawerClose {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--muted);
+  font-size: 0.95rem;
+  transition: background 0.18s, color 0.18s;
+  cursor: pointer;
+}
+
+.drawerClose:hover {
+  background: var(--border);
+  color: var(--dark);
+}
+
+.drawerBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.drawerFooter {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.applyBtn {
+  width: 100%;
+  padding: 13px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.applyBtn:hover {
+  background: var(--primary-hover);
+}

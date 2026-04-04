@@ -1,0 +1,44 @@
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.pill {
+  padding: 8px 18px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  transition: border-color 0.18s, background 0.18s, color 0.18s, transform 0.12s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pill:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #fff0f3;
+  transform: translateY(-1px);
+}
+
+.pill:active {
+  transform: scale(0.97);
+}
+
+.pill.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.pill.active:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: #fff;
+}
