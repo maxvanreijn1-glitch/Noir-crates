@@ -12,7 +12,12 @@
 
 import postgres from "postgres";
 import bcrypt from "bcryptjs";
-import "dotenv/config";
+import { config as dotenvConfig } from "dotenv";
+
+// Load .env.local first (Next.js convention), then .env as a fallback.
+// Variables already in process.env (e.g. from Vercel) are never overwritten.
+dotenvConfig({ path: ".env.local" });
+dotenvConfig({ path: ".env" });
 
 const url = process.env.DATABASE_URL;
 if (!url) {
