@@ -27,6 +27,11 @@ const DEFAULT_FILTERS: FiltersState = {
   subcategories: [],
 };
 
+/** Lookup map for human-readable sort labels */
+const SORT_LABEL_MAP = Object.fromEntries(
+  SORT_OPTIONS.map((o) => [o.value, o.label])
+);
+
 const AVAILABILITY_LABELS: Record<StockStatus, string> = {
   in_stock: "In Stock",
   sold_out: "Sold Out",
@@ -210,7 +215,7 @@ export default function ShopCollectionClient({
               <div className={styles.chipBar} role="list" aria-label="Active filters">
                 {filters.sort !== "featured" && (
                   <span className={styles.chip} role="listitem">
-                    Sort: {filters.sort.replace("-", " ")}
+                    Sort: {SORT_LABEL_MAP[filters.sort] ?? filters.sort}
                     <button
                       className={styles.chipRemove}
                       onClick={() => removeFilterChip("sort", filters.sort)}

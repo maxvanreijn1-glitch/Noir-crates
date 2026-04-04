@@ -70,7 +70,7 @@ export default function Navbar() {
                 ))}
                 <hr className={styles.dropdownDivider} />
                 <Link
-                  href="/blind-boxes?filter=new"
+                  href="/blind-boxes"
                   className={styles.dropdownItem}
                   role="menuitem"
                   onClick={() => setShopOpen(false)}
@@ -78,7 +78,7 @@ export default function Navbar() {
                   New Arrivals
                 </Link>
                 <Link
-                  href="/?section=sale"
+                  href="/"
                   className={styles.dropdownItem}
                   role="menuitem"
                   onClick={() => setShopOpen(false)}
@@ -89,7 +89,7 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link href="/blind-boxes?filter=new" className={styles.navLink}>
+          <Link href="/blind-boxes" className={styles.navLink}>
             New Arrivals
           </Link>
           <Link href="/about" className={styles.navLink}>

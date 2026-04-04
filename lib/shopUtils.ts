@@ -7,9 +7,13 @@ import type {
   StockStatus,
 } from "@/lib/shopTypes";
 
+/** Products created within this many days are eligible for the "new" tag */
 const NEW_PRODUCT_THRESHOLD_DAYS = 60;
+/** Products with sold_this_week above this value receive the "trending" tag */
 const TRENDING_THRESHOLD = 5;
+/** Multiplier applied to sold_this_week when computing popularity score */
 const SALES_WEIGHT = 10;
+/** Bonus added to popularity score for featured products */
 const FEATURED_BONUS = 50;
 
 export function formatGBP(pence: number): string {
@@ -78,17 +82,20 @@ function deriveSubcategories(p: Product): string[] {
   return [...new Set(buckets)];
 }
 
+function daysToMs(days: number): number {
+  return days * 24 * 60 * 60 * 1000;
+}
+
 function deriveShopTags(p: Product): string[] {
   const tags: string[] = [];
-  const sixtyDaysAgo =
-    Date.now() - NEW_PRODUCT_THRESHOLD_DAYS * 24 * 60 * 60 * 1000;
+  const cutoff = Date.now() - daysToMs(NEW_PRODUCT_THRESHOLD_DAYS);
 
   if (p.badges.includes("Best Seller") || p.badges.includes("Hot")) {
     tags.push("hot");
   }
   if (
     p.badges.includes("New") ||
-    (p.featured && new Date(p.createdAt).getTime() > sixtyDaysAgo)
+    (p.featured && new Date(p.createdAt).getTime() > cutoff)
   ) {
     tags.push("new");
   }
