@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         if (!product) throw new Error(`Unknown product: ${productId}`);
         return {
           price_data: {
-            currency: "usd",
+            currency: "gbp",
             product_data: {
               name: product.name,
               description: product.tagline,
