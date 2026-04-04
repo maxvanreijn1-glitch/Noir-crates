@@ -7,6 +7,11 @@ import type {
   StockStatus,
 } from "@/lib/shopTypes";
 
+const NEW_PRODUCT_THRESHOLD_DAYS = 60;
+const TRENDING_THRESHOLD = 5;
+const SALES_WEIGHT = 10;
+const FEATURED_BONUS = 50;
+
 export function formatGBP(pence: number): string {
   return `£${(pence / 100).toFixed(2)}`;
 }
@@ -75,7 +80,8 @@ function deriveSubcategories(p: Product): string[] {
 
 function deriveShopTags(p: Product): string[] {
   const tags: string[] = [];
-  const sixtyDaysAgo = Date.now() - 60 * 24 * 60 * 60 * 1000;
+  const sixtyDaysAgo =
+    Date.now() - NEW_PRODUCT_THRESHOLD_DAYS * 24 * 60 * 60 * 1000;
 
   if (p.badges.includes("Best Seller") || p.badges.includes("Hot")) {
     tags.push("hot");
@@ -96,7 +102,7 @@ function deriveShopTags(p: Product): string[] {
   ) {
     tags.push("premium");
   }
-  if (p.sold_this_week > 5) tags.push("trending");
+  if (p.sold_this_week > TRENDING_THRESHOLD) tags.push("trending");
 
   return [...new Set(tags)];
 }
@@ -116,7 +122,7 @@ export function normalizeProduct(p: Product): NormalizedProduct {
     shopTags: deriveShopTags(p),
     brandSeries: p.attributes.brand,
     stockStatus: (p.inStock ? "in_stock" : "sold_out") as StockStatus,
-    popularityScore: p.sold_this_week * 10 + (p.featured ? 50 : 0),
+    popularityScore: p.sold_this_week * SALES_WEIGHT + (p.featured ? FEATURED_BONUS : 0),
     shopBadge: deriveShopBadge(p.badges),
     releaseDate: p.createdAt,
     priceRange: getPriceRange(p.price, p.category as ShopCategory),
