@@ -82,6 +82,29 @@ async function migrate() {
   `;
 
   await sql`
+    CREATE TABLE IF NOT EXISTS product_categories (
+      id          SERIAL PRIMARY KEY,
+      name        TEXT NOT NULL UNIQUE,
+      slug        TEXT NOT NULL UNIQUE,
+      description TEXT,
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS product_subcategories (
+      id          SERIAL PRIMARY KEY,
+      category_id INTEGER NOT NULL,
+      name        TEXT NOT NULL,
+      slug        TEXT NOT NULL,
+      description TEXT,
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE(category_id, slug),
+      FOREIGN KEY (category_id) REFERENCES product_categories(id) ON DELETE CASCADE
+    )
+  `;
+
+  await sql`
     CREATE TABLE IF NOT EXISTS products (
       id                       SERIAL PRIMARY KEY,
       slug                     TEXT    NOT NULL UNIQUE,
@@ -91,11 +114,19 @@ async function migrate() {
       price_cents              INTEGER NOT NULL DEFAULT 0,
       compare_at_price_cents   INTEGER,
       image                    TEXT,
+      images                   TEXT[]  NOT NULL DEFAULT '{}',
       category                 TEXT,
+      category_id              INTEGER,
+      subcategory_id           INTEGER,
+      attributes               JSONB   NOT NULL DEFAULT '{}',
+      featured                 BOOLEAN NOT NULL DEFAULT FALSE,
+      status                   TEXT    NOT NULL DEFAULT 'active',
       in_stock                 BOOLEAN NOT NULL DEFAULT TRUE,
       stock_qty                INTEGER NOT NULL DEFAULT 0,
       created_at               TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at               TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      updated_at               TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      FOREIGN KEY (category_id)    REFERENCES product_categories(id)    ON DELETE SET NULL,
+      FOREIGN KEY (subcategory_id) REFERENCES product_subcategories(id) ON DELETE SET NULL
     )
   `;
 
@@ -481,6 +512,21 @@ async function migrate() {
   } else {
     console.log(`ℹ️  Super-admin already exists: ${seedEmail}\n`);
   }
+
+  // Seed default product categories
+  const defaultCategories = [
+    { name: "TCG", slug: "tcg", description: "Trading Card Games" },
+    { name: "Blind Boxes", slug: "blind-boxes", description: "Blind Box collectibles" },
+    { name: "Mystery Crates", slug: "mystery-crates", description: "Mystery Crate bundles" },
+  ];
+  for (const cat of defaultCategories) {
+    await sql`
+      INSERT INTO product_categories (name, slug, description)
+      VALUES (${cat.name}, ${cat.slug}, ${cat.description})
+      ON CONFLICT (slug) DO NOTHING
+    `;
+  }
+  console.log("✅ Default product categories seeded.\n");
 
   console.log("🎉 Migration complete!\n");
   await sql.end();

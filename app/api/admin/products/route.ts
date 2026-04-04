@@ -17,21 +17,59 @@ export async function GET(req: NextRequest) {
     let data, countResult;
 
     if (search && category) {
-      countResult = await sql<[{ count: string }]>`SELECT COUNT(*) as count FROM products WHERE (name ILIKE ${'%' + search + '%'} OR slug ILIKE ${'%' + search + '%'}) AND category = ${category}`;
-      data = await sql`SELECT * FROM products WHERE (name ILIKE ${'%' + search + '%'} OR slug ILIKE ${'%' + search + '%'}) AND category = ${category} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+      countResult = await sql<[{ count: string }]>`
+        SELECT COUNT(*) as count FROM products
+        WHERE (name ILIKE ${'%' + search + '%'} OR slug ILIKE ${'%' + search + '%'})
+          AND (category = ${category} OR category_id::text = ${category})
+      `;
+      data = await sql`
+        SELECT p.*, pc.name AS category_name, ps.name AS subcategory_name
+        FROM products p
+        LEFT JOIN product_categories pc ON pc.id = p.category_id
+        LEFT JOIN product_subcategories ps ON ps.id = p.subcategory_id
+        WHERE (p.name ILIKE ${'%' + search + '%'} OR p.slug ILIKE ${'%' + search + '%'})
+          AND (p.category = ${category} OR p.category_id::text = ${category})
+        ORDER BY p.id DESC LIMIT ${limit} OFFSET ${offset}
+      `;
     } else if (search) {
-      countResult = await sql<[{ count: string }]>`SELECT COUNT(*) as count FROM products WHERE name ILIKE ${'%' + search + '%'} OR slug ILIKE ${'%' + search + '%'}`;
-      data = await sql`SELECT * FROM products WHERE name ILIKE ${'%' + search + '%'} OR slug ILIKE ${'%' + search + '%'} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+      countResult = await sql<[{ count: string }]>`
+        SELECT COUNT(*) as count FROM products
+        WHERE name ILIKE ${'%' + search + '%'} OR slug ILIKE ${'%' + search + '%'}
+      `;
+      data = await sql`
+        SELECT p.*, pc.name AS category_name, ps.name AS subcategory_name
+        FROM products p
+        LEFT JOIN product_categories pc ON pc.id = p.category_id
+        LEFT JOIN product_subcategories ps ON ps.id = p.subcategory_id
+        WHERE p.name ILIKE ${'%' + search + '%'} OR p.slug ILIKE ${'%' + search + '%'}
+        ORDER BY p.id DESC LIMIT ${limit} OFFSET ${offset}
+      `;
     } else if (category) {
-      countResult = await sql<[{ count: string }]>`SELECT COUNT(*) as count FROM products WHERE category = ${category}`;
-      data = await sql`SELECT * FROM products WHERE category = ${category} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+      countResult = await sql<[{ count: string }]>`
+        SELECT COUNT(*) as count FROM products
+        WHERE category = ${category} OR category_id::text = ${category}
+      `;
+      data = await sql`
+        SELECT p.*, pc.name AS category_name, ps.name AS subcategory_name
+        FROM products p
+        LEFT JOIN product_categories pc ON pc.id = p.category_id
+        LEFT JOIN product_subcategories ps ON ps.id = p.subcategory_id
+        WHERE p.category = ${category} OR p.category_id::text = ${category}
+        ORDER BY p.id DESC LIMIT ${limit} OFFSET ${offset}
+      `;
     } else {
       countResult = await sql<[{ count: string }]>`SELECT COUNT(*) as count FROM products`;
-      data = await sql`SELECT * FROM products ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+      data = await sql`
+        SELECT p.*, pc.name AS category_name, ps.name AS subcategory_name
+        FROM products p
+        LEFT JOIN product_categories pc ON pc.id = p.category_id
+        LEFT JOIN product_subcategories ps ON ps.id = p.subcategory_id
+        ORDER BY p.id DESC LIMIT ${limit} OFFSET ${offset}
+      `;
     }
 
     const total = parseInt(countResult[0].count);
-    return NextResponse.json({ data, total, pages: Math.ceil(total / limit) });
+    return NextResponse.json({ data, total, totalPages: Math.ceil(total / limit) });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -44,24 +82,71 @@ export async function POST(req: NextRequest) {
     if (admin instanceof NextResponse) return admin;
 
     const body = await req.json() as Record<string, unknown>;
-    const { name, slug, price_cents, category } = body;
+    const { name, slug, price_cents } = body;
 
-    if (!name || !slug || price_cents === undefined || !category) {
+    if (!name || !slug || price_cents === undefined) {
       return NextResponse.json(
-        { error: "Missing required fields: name, slug, price_cents, category" },
+        { error: "Missing required fields: name, slug, price_cents" },
         { status: 400 }
       );
     }
 
+    if ((price_cents as number) <= 0) {
+      return NextResponse.json({ error: "price_cents must be greater than 0" }, { status: 400 });
+    }
+
+    const stockQty = body.stock_qty != null ? (body.stock_qty as number) : 0;
+    if (stockQty < 0) {
+      return NextResponse.json({ error: "stock_qty must be >= 0" }, { status: 400 });
+    }
+
+    const categoryId = body.category_id != null ? (body.category_id as number) : null;
+    const subcategoryId = body.subcategory_id != null ? (body.subcategory_id as number) : null;
+
+    // Validate subcategory belongs to the selected category
+    if (subcategoryId && categoryId) {
+      const subCheck = await sql`
+        SELECT id FROM product_subcategories WHERE id = ${subcategoryId} AND category_id = ${categoryId}
+      `;
+      if (subCheck.length === 0) {
+        return NextResponse.json(
+          { error: "Subcategory does not belong to the selected category" },
+          { status: 400 }
+        );
+      }
+    }
+
+    const images = Array.isArray(body.images) ? (body.images as string[]) : [];
+    const attributes = body.attributes && typeof body.attributes === "object" ? body.attributes : {};
+    const featured = body.featured === true;
+    const status = ["active", "draft", "inactive"].includes(body.status as string)
+      ? (body.status as string)
+      : "active";
     const inStock = body.in_stock !== undefined ? (body.in_stock ? true : false) : true;
+
     const [product] = await sql<[Record<string, unknown>]>`
-      INSERT INTO products (name, slug, price_cents, category, tagline, description,
-        compare_at_price_cents, image, in_stock, stock_qty)
+      INSERT INTO products (
+        name, slug, price_cents, category, category_id, subcategory_id,
+        tagline, description, compare_at_price_cents, image, images,
+        attributes, featured, status, in_stock, stock_qty
+      )
       VALUES (
-        ${name as string}, ${slug as string}, ${price_cents as number}, ${category as string},
-        ${body.tagline as string | null ?? null}, ${body.description as string | null ?? null},
-        ${body.compare_at_price_cents as number | null ?? null}, ${body.image as string | null ?? null},
-        ${inStock}, ${body.stock_qty as number ?? 0}
+        ${name as string},
+        ${slug as string},
+        ${price_cents as number},
+        ${body.category as string | null ?? null},
+        ${categoryId},
+        ${subcategoryId},
+        ${body.tagline as string | null ?? null},
+        ${body.description as string | null ?? null},
+        ${body.compare_at_price_cents as number | null ?? null},
+        ${body.image as string | null ?? null},
+        ${sql.array(images)},
+        ${JSON.stringify(attributes)},
+        ${featured},
+        ${status},
+        ${inStock},
+        ${stockQty}
       )
       RETURNING *
     `;
@@ -79,3 +164,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+

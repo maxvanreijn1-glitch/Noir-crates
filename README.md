@@ -52,7 +52,8 @@ A full collection page modelled on standard e-commerce category pages:
 A full-featured admin area is available at `/admin`. It includes:
 
 - **Dashboard** — sales overview, revenue, orders by status, top products
-- **Products** — add/edit/delete products, manage stock
+- **Products** — add/edit/delete products with categories, subcategories, images, attributes, featured toggle, and status
+- **Categories** — manage product categories and subcategories dynamically (no hardcoding)
 - **Orders** — view all orders, update status, issue refunds/cancellations
 - **Customers** — view accounts, order history, addresses, ban/flag users, support notes, admin notes, total spend
 - **Payments** — transaction history, payment status, fraud detection flags
@@ -62,6 +63,96 @@ A full-featured admin area is available at `/admin`. It includes:
 - **Roles & Admins** — multiple admin accounts with role-based access
 - **Audit Logs** — activity log (who did what)
 - **Settings** — store info, payment config, email templates
+
+### Product Categories
+
+Three top-level categories are seeded by the migration: **TCG**, **Blind Boxes**, and **Mystery Crates**. Admins can add more categories and subcategories without code changes via `/admin/categories`.
+
+### Product API — Creating a Product
+
+**`POST /api/admin/products`** — requires `admin_token` cookie with `products:write` permission.
+
+#### Required fields
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `name` | `string` | Product display name |
+| `slug` | `string` | URL-safe unique identifier |
+| `price_cents` | `number` | Price in cents, must be > 0 |
+
+#### Optional fields
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `tagline` | `string` | Short marketing line |
+| `description` | `string` | Full product description |
+| `category_id` | `number` | FK to `product_categories.id` |
+| `subcategory_id` | `number` | FK to `product_subcategories.id`; must belong to `category_id` |
+| `category` | `string` | Legacy category slug (optional, for backwards compat) |
+| `images` | `string[]` | Array of image URLs |
+| `attributes` | `object` | Key/value pairs stored as JSONB, e.g. `{ "brand": "Pokémon", "type": "Booster Box" }` |
+| `featured` | `boolean` | Show on featured section (default: `false`) |
+| `status` | `"active" \| "draft" \| "inactive"` | (default: `"active"`) |
+| `in_stock` | `boolean` | (default: `true`) |
+| `stock_qty` | `number` | Must be >= 0 (default: `0`) |
+| `compare_at_price_cents` | `number` | Original/crossed-out price in cents |
+
+#### Example request payload
+
+```json
+{
+  "name": "Pokémon Scarlet & Violet Booster Box",
+  "slug": "pokemon-sv-booster-box",
+  "tagline": "36 booster packs from the latest set",
+  "description": "Full booster box containing 36 packs from the Scarlet & Violet base set.",
+  "price_cents": 14999,
+  "compare_at_price_cents": 17999,
+  "category_id": 1,
+  "subcategory_id": 2,
+  "images": [
+    "https://example.com/images/sv-booster-box-front.jpg",
+    "https://example.com/images/sv-booster-box-back.jpg"
+  ],
+  "attributes": {
+    "brand": "Pokémon",
+    "type": "Booster Box",
+    "set": "Scarlet & Violet",
+    "packs_per_box": "36"
+  },
+  "featured": true,
+  "status": "active",
+  "in_stock": true,
+  "stock_qty": 12
+}
+```
+
+#### Example cURL
+
+```bash
+curl -X POST https://your-domain.vercel.app/api/admin/products \
+  -H "Content-Type: application/json" \
+  -H "Cookie: admin_token=<your-admin-jwt>" \
+  -d '{
+    "name": "Pokémon Scarlet & Violet Booster Box",
+    "slug": "pokemon-sv-booster-box",
+    "price_cents": 14999,
+    "category_id": 1,
+    "images": ["https://example.com/sv-box.jpg"],
+    "attributes": { "brand": "Pokémon", "type": "Booster Box" },
+    "featured": true,
+    "status": "active",
+    "stock_qty": 12
+  }'
+```
+
+### Category & Subcategory API
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/admin/product-categories` | GET | List all categories |
+| `/api/admin/product-categories` | POST | Create a category (`name`, `slug`, `description?`) |
+| `/api/admin/product-categories/[id]/subcategories` | GET | List subcategories for a category |
+| `/api/admin/product-categories/[id]/subcategories` | POST | Create a subcategory (`name`, `slug`, `description?`) |
 
 ### Default Admin Credentials
 

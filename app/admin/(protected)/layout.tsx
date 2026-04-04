@@ -7,6 +7,7 @@ import styles from './layout.module.css';
 const navLinks = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
   { href: '/admin/products', label: 'Products', icon: '🛍️' },
+  { href: '/admin/categories', label: 'Categories', icon: '🗂️' },
   { href: '/admin/orders', label: 'Orders', icon: '📦' },
   { href: '/admin/customers', label: 'Customers', icon: '👥' },
   { href: '/admin/payments', label: 'Payments', icon: '💳' },

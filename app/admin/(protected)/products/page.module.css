@@ -125,6 +125,31 @@
   color: #721c24;
 }
 
+.badgeYellow {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badgeGray {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #e9ecef;
+  color: #6c757d;
+}
+
+.subcat {
+  color: var(--text-light);
+  font-size: 0.8rem;
+}
+
 .btnPrimary {
   display: inline-block;
   padding: 10px 20px;
