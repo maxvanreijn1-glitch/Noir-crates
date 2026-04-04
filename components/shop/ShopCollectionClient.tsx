@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { SORT_OPTIONS } from "@/lib/shopTypes";
 import type { FiltersState, NormalizedProduct, StockStatus } from "@/lib/shopTypes";
 import {
   filterAndSortProducts,
@@ -294,15 +295,7 @@ export default function ShopCollectionClient({
                   }
                   aria-label="Sort products"
                 >
-                  {[
-                    { value: "featured", label: "Featured" },
-                    { value: "price-asc", label: "Price: Low to High" },
-                    { value: "price-desc", label: "Price: High to Low" },
-                    { value: "name-asc", label: "Name: A–Z" },
-                    { value: "name-desc", label: "Name: Z–A" },
-                    { value: "newest", label: "Newest" },
-                    { value: "popularity", label: "Most Popular" },
-                  ].map((opt) => (
+                  {SORT_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
                     </option>
