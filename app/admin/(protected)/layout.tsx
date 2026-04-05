@@ -16,6 +16,7 @@ const navLinks = [
   { href: '/admin/content', label: 'Content', icon: '📝' },
   { href: '/admin/roles', label: 'Roles & Admins', icon: '🔐' },
   { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
+  { href: '/admin/pack-opener', label: 'Pack Opener', icon: '🃏' },
 ];
 
 export default async function ProtectedAdminLayout({

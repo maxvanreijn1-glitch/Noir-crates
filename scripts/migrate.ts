@@ -447,6 +447,34 @@ async function migrate() {
     )
   `;
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS pack_openings (
+      id          SERIAL PRIMARY KEY,
+      session_id  TEXT NOT NULL UNIQUE,
+      customer_id INTEGER,
+      tcg_id      TEXT NOT NULL,
+      set_id      TEXT NOT NULL,
+      tcg_name    TEXT NOT NULL,
+      set_name    TEXT NOT NULL,
+      status      TEXT NOT NULL DEFAULT 'opened',
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS pack_opening_cards (
+      id          SERIAL PRIMARY KEY,
+      opening_id  INTEGER NOT NULL,
+      card_name   TEXT NOT NULL,
+      card_image  TEXT NOT NULL,
+      card_rarity TEXT NOT NULL,
+      card_set    TEXT NOT NULL,
+      position    INTEGER NOT NULL DEFAULT 0,
+      FOREIGN KEY (opening_id) REFERENCES pack_openings(id) ON DELETE CASCADE
+    )
+  `;
+
   console.log("✅ Tables created.\n");
 
   // Default settings
