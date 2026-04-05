@@ -496,17 +496,20 @@
 .cardInner.glowGold {
   border-color: #ffd700;
   box-shadow: 0 0 24px rgba(255, 215, 0, 0.6), 0 0 48px rgba(255, 215, 0, 0.3);
+}
+
+.cardInner.glowRainbow {
   animation: rainbowGlow 2s linear infinite;
 }
 
 @keyframes rainbowGlow {
-  0% { box-shadow: 0 0 24px rgba(255, 0, 0, 0.6); border-color: #ff0000; }
-  16% { box-shadow: 0 0 24px rgba(255, 165, 0, 0.6); border-color: #ffa500; }
-  33% { box-shadow: 0 0 24px rgba(255, 215, 0, 0.6); border-color: #ffd700; }
-  50% { box-shadow: 0 0 24px rgba(0, 212, 255, 0.6); border-color: #00d4ff; }
-  66% { box-shadow: 0 0 24px rgba(157, 78, 221, 0.6); border-color: #9d4edd; }
-  83% { box-shadow: 0 0 24px rgba(255, 105, 180, 0.6); border-color: #ff69b4; }
-  100% { box-shadow: 0 0 24px rgba(255, 0, 0, 0.6); border-color: #ff0000; }
+  0% { box-shadow: 0 0 32px rgba(255, 0, 0, 0.8); border-color: #ff0000; }
+  16% { box-shadow: 0 0 32px rgba(255, 165, 0, 0.8); border-color: #ffa500; }
+  33% { box-shadow: 0 0 32px rgba(255, 215, 0, 0.8); border-color: #ffd700; }
+  50% { box-shadow: 0 0 32px rgba(0, 212, 255, 0.8); border-color: #00d4ff; }
+  66% { box-shadow: 0 0 32px rgba(157, 78, 221, 0.8); border-color: #9d4edd; }
+  83% { box-shadow: 0 0 32px rgba(255, 105, 180, 0.8); border-color: #ff69b4; }
+  100% { box-shadow: 0 0 32px rgba(255, 0, 0, 0.8); border-color: #ff0000; }
 }
 
 .cardImg {
@@ -698,4 +701,242 @@
   color: #4ade80;
   font-weight: 800;
   letter-spacing: 0.05em;
+}
+
+/* ─── Boost meter bar ────────────────────────────────────────────────────── */
+.boostBarWrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem 1rem;
+}
+
+.boostBarLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffd700;
+  margin-bottom: 0.4rem;
+}
+
+.boostBarValue {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+}
+
+.boostBarTrack {
+  width: 100%;
+  height: 8px;
+  background: #1a1a2e;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #2a2a4e;
+}
+
+.boostBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #9d4edd 0%, #ffd700 100%);
+  border-radius: 999px;
+  transition: width 0.6s ease-out;
+}
+
+.boostBarHint {
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
+  color: #666688;
+  text-align: center;
+}
+
+.boostUpdate {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ─── TCGdex API tag on Pokémon game card ───────────────────────────────── */
+.apiTag {
+  font-size: 0.65rem;
+  color: #00d4ff;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 4px;
+  padding: 0.15rem 0.4rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-top: -0.25rem;
+}
+
+/* ─── Pack type selector grid ───────────────────────────────────────────── */
+.packTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.packTypeCard {
+  position: relative;
+  background: #0e0e1a;
+  border: 2px solid #1e1e3a;
+  border-radius: 14px;
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.packTypeCard:hover {
+  transform: translateY(-3px);
+}
+
+/* Basic */
+.packType_basic { border-color: #333355; }
+.packType_basic:hover { border-color: #9d4edd; box-shadow: 0 0 20px rgba(157, 78, 221, 0.3); }
+
+/* Premium */
+.packType_premium { border-color: #2a4080; }
+.packType_premium:hover { border-color: #00d4ff; box-shadow: 0 0 24px rgba(0, 212, 255, 0.4); }
+
+/* Elite */
+.packType_elite { border-color: #504000; }
+.packType_elite:hover { border-color: #ffd700; box-shadow: 0 0 28px rgba(255, 215, 0, 0.4); }
+
+/* Selected state */
+.packTypeSelected.packType_basic  { border-color: #9d4edd; box-shadow: 0 0 24px rgba(157, 78, 221, 0.5); }
+.packTypeSelected.packType_premium { border-color: #00d4ff; box-shadow: 0 0 28px rgba(0, 212, 255, 0.6); }
+.packTypeSelected.packType_elite  { border-color: #ffd700; box-shadow: 0 0 32px rgba(255, 215, 0, 0.6); }
+
+.packTypeName {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.packType_basic  .packTypeName { color: #9d4edd; }
+.packType_premium .packTypeName { color: #00d4ff; }
+.packType_elite  .packTypeName { color: #ffd700; }
+
+.packTypePrice {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #e0e0e0;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.packTypeDesc {
+  font-size: 0.75rem;
+  color: #8888aa;
+  line-height: 1.4;
+}
+
+.packTypeTag {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: linear-gradient(135deg, #ffd700, #b8860b);
+  color: #0a0a0f;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+}
+
+.packTypeOddsNote {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.06);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ─── Pack type badge in selection header ────────────────────────────────── */
+.packTypeBadge_basic  { border-color: #9d4edd; color: #c07fff; }
+.packTypeBadge_premium { border-color: #00d4ff; color: #00d4ff; }
+.packTypeBadge_elite  { border-color: #ffd700; color: #ffd700; }
+
+/* ─── Pack type pill in pack opening / reveal ────────────────────────────── */
+.packTypePill {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+.packTypePill_basic  { background: rgba(157, 78, 221, 0.15); color: #c07fff; border: 1px solid rgba(157, 78, 221, 0.4); }
+.packTypePill_premium { background: rgba(0, 212, 255, 0.12); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.35); }
+.packTypePill_elite  { background: rgba(255, 215, 0, 0.12); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.35); }
+
+/* ─── Pack image per pack type ───────────────────────────────────────────── */
+.packImage_premium {
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.6), 0 0 80px rgba(0, 212, 255, 0.3);
+  border-color: #00d4ff;
+  background: linear-gradient(135deg, #0a1a3e 0%, #0a2a4e 50%, #0a1a3e 100%);
+}
+
+.packImage_elite {
+  box-shadow: 0 0 50px rgba(255, 215, 0, 0.7), 0 0 100px rgba(255, 215, 0, 0.3);
+  border-color: #ffd700;
+  background: linear-gradient(135deg, #2a1a00 0%, #3a2a00 50%, #2a1a00 100%);
+  animation: packPulse 2s ease-in-out infinite, packShake 0.3s ease-in-out infinite, eliteGlow 3s linear infinite;
+}
+
+@keyframes eliteGlow {
+  0%   { box-shadow: 0 0 50px rgba(255, 215, 0, 0.7), 0 0 100px rgba(255, 100, 0, 0.3); }
+  33%  { box-shadow: 0 0 50px rgba(255, 100, 0, 0.7), 0 0 100px rgba(255, 215, 0, 0.3); }
+  66%  { box-shadow: 0 0 50px rgba(255, 215, 0, 0.7), 0 0 100px rgba(255, 150, 0, 0.3); }
+  100% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.7), 0 0 100px rgba(255, 100, 0, 0.3); }
+}
+
+/* ─── High-rarity card reveal enhancements ───────────────────────────────── */
+.cardItemHighRarity {
+  animation: cardSlideIn 0.6s ease-out both;
+}
+
+.cardRevealFlash {
+  animation: revealFlash 0.7s ease-out !important;
+}
+
+@keyframes revealFlash {
+  0%   { transform: scale(0.8); opacity: 0; filter: brightness(3); }
+  30%  { transform: scale(1.12); filter: brightness(2); }
+  60%  { transform: scale(0.97); filter: brightness(1.3); }
+  100% { transform: scale(1); opacity: 1; filter: brightness(1); }
+}
+
+/* ─── Card fallback when image fails ────────────────────────────────────── */
+.cardImgFallback {
+  width: 100%;
+  aspect-ratio: 5/7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  color: #c0c0d8;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.5rem;
+  background: #0a0a18;
+  word-break: break-word;
 }
