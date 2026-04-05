@@ -10,6 +10,7 @@ const SHOP_LINKS = [
   { href: "/tcg", label: "TCG" },
   { href: "/mystery-crates", label: "Mystery Crates" },
   { href: "/pack-opener", label: "Pack Opener" },
+  { href: "/pokemon-pack-opener", label: "Pokémon Pack Opener" },
 ];
 
 export default function Navbar() {
