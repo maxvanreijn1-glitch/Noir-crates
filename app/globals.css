@@ -1,36 +1,56 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&family=Orbitron:wght@400;600;700;900&display=swap');
 
 :root {
-  /* Noir Luxury Palette */
-  --bg: #F5F2ED;
-  --bg-card: #FDFCFB;
-  --bg-dark: #0E0E0E;
-  --bg-dark-2: #161410;
-  --primary: #B8922A;
-  --primary-hover: #9C7B22;
-  --accent: #D4AE65;
-  --muted: #8A7E6B;
-  --dark: #0E0E0E;
-  --text: #1E1A14;
-  --text-light: #7A7060;
-  --text-inverse: #F5F2ED;
-  --border: #E0D6C8;
-  --border-dark: #2A2620;
-  --shadow-sm: 0 1px 6px rgba(30,26,20,0.06);
-  --shadow-md: 0 4px 24px rgba(30,26,20,0.10);
-  --shadow-lg: 0 12px 48px rgba(30,26,20,0.16);
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-xl: 18px;
-  /* Gold tones */
-  --gold-light: #EAD9A4;
-  --gold-mid: #D4AE65;
-  --gold-deep: #B8922A;
-  /* Legacy aliases kept for backward compat */
-  --sakura-light: #EAD9A4;
-  --sakura-mid: #D4AE65;
-  --sakura-deep: #B8922A;
+  /* ── Dark Premium Base ──────────────────────────────── */
+  --bg: #07070f;
+  --bg-card: #0d0d1a;
+  --bg-dark: #040408;
+  --bg-dark-2: #080810;
+  --bg-elevated: #111128;
+
+  /* ── Neon Accents ───────────────────────────────────── */
+  --primary: #8b5cf6;          /* electric violet */
+  --primary-hover: #7c3aed;
+  --accent: #06b6d4;           /* cyan */
+  --accent-magenta: #e879f9;   /* soft magenta */
+  --muted: #6b7280;
+
+  /* ── Text ───────────────────────────────────────────── */
+  --dark: #f1f5f9;             /* heading/key text on dark bg */
+  --text: #cbd5e1;
+  --text-light: #94a3b8;
+  --text-inverse: #07070f;
+
+  /* ── Borders ────────────────────────────────────────── */
+  --border: rgba(139, 92, 246, 0.18);
+  --border-dark: rgba(255, 255, 255, 0.05);
+  --border-glow: rgba(139, 92, 246, 0.5);
+
+  /* ── Shadows / Glows ────────────────────────────────── */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(139, 92, 246, 0.06);
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.7), 0 0 40px rgba(139, 92, 246, 0.1);
+  --glow-primary: 0 0 20px rgba(139, 92, 246, 0.45), 0 0 40px rgba(139, 92, 246, 0.2);
+  --glow-cyan: 0 0 20px rgba(6, 182, 212, 0.45), 0 0 40px rgba(6, 182, 212, 0.2);
+  --glow-magenta: 0 0 20px rgba(232, 121, 249, 0.45), 0 0 40px rgba(232, 121, 249, 0.2);
+
+  /* ── Radii ──────────────────────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* ── Glassmorphism ──────────────────────────────────── */
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+
+  /* ── Legacy gold/sakura tokens → repurposed to violet ─ */
+  --gold-light: rgba(139, 92, 246, 0.25);
+  --gold-mid: #8b5cf6;
+  --gold-deep: #7c3aed;
+  --sakura-light: rgba(139, 92, 246, 0.25);
+  --sakura-mid: #8b5cf6;
+  --sakura-deep: #7c3aed;
 }
 
 *, *::before, *::after {
@@ -46,6 +66,11 @@ html {
 
 body {
   background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 15% 5%, rgba(139, 92, 246, 0.1) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 85% 85%, rgba(6, 182, 212, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 60% at 50% 50%, rgba(232, 121, 249, 0.04) 0%, transparent 65%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: 'Inter', sans-serif;
   font-weight: 400;
@@ -97,6 +122,15 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Focus styles for accessibility */
 :focus-visible {
-  outline: 2px solid var(--dark);
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+
+/* Reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

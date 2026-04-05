@@ -52,7 +52,7 @@
 
 .imageWrap {
   position: relative;
-  background: #F0EDE8;
+  background: linear-gradient(135deg, #0e0e1a 0%, #1a1030 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,7 +83,7 @@
 }
 
 .badgeLimited {
-  background: var(--dark);
+  background: var(--primary);
 }
 
 .badgePremium {
@@ -148,7 +148,7 @@
 .addBtn {
   margin-top: auto;
   padding: 7px 0;
-  background: var(--dark);
+  background: var(--primary);
   color: #FDFCF8;
   font-size: 0.72rem;
   font-weight: 500;

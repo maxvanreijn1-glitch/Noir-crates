@@ -68,7 +68,7 @@
 
 .btnPrimary {
   padding: 12px 28px;
-  background: var(--dark);
+  background: var(--primary);
   color: #FDFCF8;
   border: none;
   border-radius: var(--radius-sm);

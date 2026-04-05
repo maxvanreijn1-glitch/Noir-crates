@@ -1,18 +1,20 @@
 .btn {
   padding: 10px 18px;
-  background: var(--dark);
-  color: #FDFCF8;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 500;
   border-radius: var(--radius-sm);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  transition: background 0.2s, transform 0.1s;
+  transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
   white-space: nowrap;
+  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.35);
 }
 
 .btn:hover {
-  background: var(--primary);
+  opacity: 0.9;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.5);
 }
 
 .btn:active {
