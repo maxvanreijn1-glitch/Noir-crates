@@ -15,7 +15,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(139, 92, 246, 0.18) 0%, transparent 70%);
+  background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(184,146,42,0.12) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -24,26 +24,26 @@
   font-weight: 500;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--gold-mid);
   margin-bottom: 28px;
 }
 
 .heroTitle {
   font-size: clamp(3rem, 7vw, 5.5rem);
   font-weight: 300;
-  color: #f8f8ff;
+  color: #FDFCF8;
   line-height: 1.1;
   margin-bottom: 28px;
 }
 
 .heroTitle em {
   font-style: italic;
-  color: var(--primary);
+  color: var(--gold-mid);
 }
 
 .heroBody {
   font-size: 1rem;
-  color: rgba(203, 213, 225, 0.7);
+  color: rgba(253,252,248,0.55);
   line-height: 1.8;
   max-width: 440px;
   margin: 0 auto 48px;
@@ -53,20 +53,21 @@
 .heroCta {
   display: inline-block;
   padding: 15px 40px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-  color: #fff;
-  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: #FDFCF8;
+  border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  transition: transform 0.2s, box-shadow 0.25s;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.45);
+  transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+  box-shadow: 0 4px 20px rgba(184,146,42,0.35);
 }
 
 .heroCta:hover {
+  background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.55);
+  box-shadow: 0 8px 28px rgba(184,146,42,0.4);
 }
 
 /* Shop section */
@@ -103,7 +104,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
 }
 
 .trustGrid {
@@ -129,13 +130,13 @@
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.1rem;
   font-weight: 400;
-  color: #f8f8ff;
+  color: #FDFCF8;
   letter-spacing: 0.04em;
 }
 
 .trustItem p {
   font-size: 0.85rem;
-  color: rgba(203, 213, 225, 0.55);
+  color: rgba(253,252,248,0.5);
   line-height: 1.7;
   max-width: 240px;
 }

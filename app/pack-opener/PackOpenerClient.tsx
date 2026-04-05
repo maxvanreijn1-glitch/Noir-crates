@@ -618,23 +618,13 @@ export default function PackOpenerClient() {
                 </p>
               )}
 
-              {isAdmin ? (
-                <button
-                  className={styles.adminOpenBtn}
-                  onClick={handleAdminOpen}
-                  disabled={checkoutLoading}
-                >
-                  {checkoutLoading ? "Opening…" : "⚡ Open for Free (Admin Test)"}
-                </button>
-              ) : (
-                <button
-                  className={styles.payBtn}
-                  onClick={handleCheckout}
-                  disabled={checkoutLoading}
-                >
-                  {checkoutLoading ? "Redirecting…" : "Proceed to Payment"}
-                </button>
-              )}
+              <button
+                className={styles.payBtn}
+                onClick={handleCheckout}
+                disabled={checkoutLoading}
+              >
+                {checkoutLoading ? "Redirecting…" : "Proceed to Payment"}
+              </button>
               <br />
               <button
                 className={styles.backLink}

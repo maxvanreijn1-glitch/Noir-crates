@@ -153,7 +153,7 @@
 .btnPrimary {
   display: inline-block;
   padding: 10px 20px;
-  background: var(--primary);
+  background: var(--dark);
   color: #FDFCF8;
   border-radius: var(--radius-sm);
   font-size: 0.875rem;

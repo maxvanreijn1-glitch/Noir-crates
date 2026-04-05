@@ -216,7 +216,7 @@
 
 .btnPrimary {
   padding: 10px 20px;
-  background: var(--primary);
+  background: var(--dark);
   color: #FDFCF8;
   border: none;
   border-radius: var(--radius-sm);

@@ -32,7 +32,7 @@
 }
 
 .pill.active {
-  background: var(--primary);
+  background: var(--dark);
   border-color: var(--dark);
   color: #FDFCF8;
   font-weight: 500;
@@ -41,5 +41,5 @@
 .pill.active:hover {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: #0E0E0E;
 }
