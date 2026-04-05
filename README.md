@@ -15,8 +15,80 @@ A calm, minimalist mystery box ecommerce storefront built with Next.js (App Rout
 | `/` | Home — hero + full product grid |
 | `/blind-boxes` | **Blind Boxes collection page** — filter, sort, paginate |
 | `/products/[slug]` | Individual product detail page |
+| `/pack-opener` | Multi-TCG virtual pack opener (Stripe payment) |
+| `/pokemon-pack-opener` | **Pokémon TCGdex Pack Opener** — free demo, live API data |
 | `/about` | About page |
 | `/faq` | FAQ page |
+
+---
+
+## Pokémon TCGdex Pack Opener (`/pokemon-pack-opener`)
+
+A free virtual Pokémon TCG pack-opening simulator powered entirely by the
+[TCGdex public API](https://api.tcgdex.net). No payment required — real card
+images and data are fetched live from TCGdex.
+
+### How it works
+
+1. **Select a set** from the dropdown (10 supported sets, see table below).
+2. Click **Open Pack** — the browser POSTs to `/api/pack-opener/tcgdex-open`.
+3. The server fetches the full card list for that set from
+   `https://api.tcgdex.net/v2/en/sets/{setId}`.
+4. Pack cards are generated using the weighted rarity system (see Odds below).
+5. Five cards are returned and revealed one by one in the browser.
+6. Card images are loaded directly from `https://assets.tcgdex.net`.
+
+### Caching
+
+| Layer | Strategy |
+|-------|----------|
+| **Server-side in-memory** | `Map<setId, cards>` with a 1-hour TTL. Subsequent pack opens for the same set never hit the API again until the cache expires. |
+| **Next.js fetch cache** | `fetch` calls use `{ next: { revalidate: 3600 } }` so the built-in data cache also holds responses for up to 1 hour. |
+
+### Pack odds
+
+| Rarity | Weight | Approximate chance per slot |
+|--------|--------|------------------------------|
+| Common | 78 | ~78% |
+| Uncommon | 17 | ~17% |
+| Rare | 4 | ~4% |
+| Ultra Rare | 1 | ~1% |
+
+Each pack contains **5 cards** and is guaranteed to have **at least 1 Uncommon or higher**.
+
+### Rarity normalisation
+
+Raw rarity strings from the TCGdex API (e.g. `"Illustration Rare"`,
+`"Special Illustration Rare"`, `"Hyper Rare"`) are normalised into four tiers:
+
+| TCGdex raw rarity (examples) | Normalised |
+|-------------------------------|------------|
+| `"Common"` | `common` |
+| `"Uncommon"` | `uncommon` |
+| `"Rare"`, `"Rare Holo"`, `"Double Rare"`, `"Illustration Rare"`, `"Radiant Rare"`, `"Promo"` | `rare` |
+| `"Ultra Rare"`, `"Special Illustration Rare"`, `"Hyper Rare"`, `"Secret"`, `"Rainbow"`, `"Full Art"`, `"Gold"`, `"Trainer Gallery"` | `ultra` |
+
+Normalisation is case-insensitive and trims whitespace. Unknown / missing
+values default to `common`.
+
+### Supported sets
+
+| Display Name | TCGdex Set ID | Release Year |
+|--------------|---------------|--------------|
+| Prismatic Evolutions | `sv8pt5` | 2025 |
+| Surging Sparks | `sv8` | 2024 |
+| Stellar Crown | `sv7` | 2024 |
+| Twilight Masquerade | `sv6` | 2024 |
+| Temporal Forces | `sv5` | 2024 |
+| Paldean Fates | `sv4pt5` | 2024 |
+| Paradox Rift | `sv4` | 2023 |
+| Obsidian Flames | `sv3` | 2023 |
+| Scarlet & Violet Base | `sv1` | 2023 |
+| Crown Zenith | `swsh12pt5` | 2023 |
+
+The canonical mapping lives in `lib/tcgdex.ts` (`POKEMON_SETS` array).
+
+---
 
 ## Blind Boxes Collection Page (`/blind-boxes`)
 
