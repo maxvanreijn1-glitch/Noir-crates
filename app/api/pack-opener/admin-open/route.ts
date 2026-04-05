@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-guard";
 import { buildPackCards } from "@/lib/pack-opener";
 import { TCG_GAMES } from "@/lib/tcg-data";
+import { POKEMON_SETS, buildTcgdexPack } from "@/lib/tcgdex";
 import { sql } from "@/lib/db";
 
 /**
@@ -26,17 +27,44 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const game = TCG_GAMES.find((g) => g.id === tcgId);
-    if (!game) {
-      return NextResponse.json({ error: "TCG not found" }, { status: 404 });
+    // Resolve game/set names.
+    // For Pokémon, validate against canonical TCGdex set list; for others use local data.
+    let gameName: string;
+    let setName: string;
+
+    if (tcgId === "pokemon") {
+      const setMeta = POKEMON_SETS.find((s) => s.tcgdexId === setId);
+      if (!setMeta) {
+        return NextResponse.json({ error: "Pokémon set not found" }, { status: 404 });
+      }
+      gameName = "Pokémon";
+      setName = setMeta.name;
+    } else {
+      const game = TCG_GAMES.find((g) => g.id === tcgId);
+      if (!game) {
+        return NextResponse.json({ error: "TCG not found" }, { status: 404 });
+      }
+      const set = game.sets.find((s) => s.id === setId);
+      if (!set) {
+        return NextResponse.json({ error: "Set not found" }, { status: 404 });
+      }
+      gameName = game.name;
+      setName = set.name;
     }
 
-    const set = game.sets.find((s) => s.id === setId);
-    if (!set) {
-      return NextResponse.json({ error: "Set not found" }, { status: 404 });
+    // Generate pack. For Pokémon use live TCGdex data with local fallback.
+    let cards;
+    if (tcgId === "pokemon") {
+      const setMeta = POKEMON_SETS.find((s) => s.tcgdexId === setId)!;
+      try {
+        cards = await buildTcgdexPack(setId, setMeta.name);
+      } catch (tcgdexErr) {
+        console.warn("[admin-open] TCGdex unavailable, using local fallback:", tcgdexErr);
+        cards = buildPackCards(tcgId, setId);
+      }
+    } else {
+      cards = buildPackCards(tcgId, setId);
     }
-
-    const cards = buildPackCards(tcgId, setId);
 
     // Persist the opening so admin test packs appear in history
     let openingId = 0;
@@ -46,7 +74,7 @@ export async function POST(req: NextRequest) {
         INSERT INTO pack_openings
           (session_id, customer_id, tcg_id, set_id, tcg_name, set_name, status)
         VALUES
-          (${sessionId}, NULL, ${tcgId}, ${setId}, ${game.name}, ${set.name}, 'opened')
+          (${sessionId}, NULL, ${tcgId}, ${setId}, ${gameName}, ${setName}, 'opened')
         RETURNING id
       `;
       openingId = opening.id;
@@ -68,8 +96,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       openingId,
       cards,
-      tcg: game.name,
-      setName: set.name,
+      tcg: gameName,
+      setName,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";

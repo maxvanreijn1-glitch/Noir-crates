@@ -28,6 +28,17 @@ export interface PokemonSet {
   tcgdexId: string;
   /** Release year */
   releaseYear: number;
+  /** Pack price in GBP */
+  priceGBP: number;
+}
+
+/** A Pokémon set entry as returned by the /api/tcgdex/sets endpoint */
+export interface PokemonSetSummary {
+  /** Canonical TCGdex set ID resolved from the live API (or fallback) */
+  id: string;
+  name: string;
+  releaseDate: string;
+  priceGBP: number;
 }
 
 // ─── Canonical set list ──────────────────────────────────────────────────────
@@ -35,18 +46,19 @@ export interface PokemonSet {
 /**
  * Supported Pokémon sets mapped to their TCGdex set IDs.
  * Order matches the UI picker (newest → oldest).
+ * IDs are resolved dynamically from the TCGdex API; this list is the fallback.
  */
 export const POKEMON_SETS: PokemonSet[] = [
-  { name: "Prismatic Evolutions",  tcgdexId: "sv8pt5",    releaseYear: 2025 },
-  { name: "Surging Sparks",        tcgdexId: "sv8",       releaseYear: 2024 },
-  { name: "Stellar Crown",         tcgdexId: "sv7",       releaseYear: 2024 },
-  { name: "Twilight Masquerade",   tcgdexId: "sv6",       releaseYear: 2024 },
-  { name: "Temporal Forces",       tcgdexId: "sv5",       releaseYear: 2024 },
-  { name: "Paldean Fates",         tcgdexId: "sv4pt5",    releaseYear: 2024 },
-  { name: "Paradox Rift",          tcgdexId: "sv4",       releaseYear: 2023 },
-  { name: "Obsidian Flames",       tcgdexId: "sv3",       releaseYear: 2023 },
-  { name: "Scarlet & Violet Base", tcgdexId: "sv1",       releaseYear: 2023 },
-  { name: "Crown Zenith",          tcgdexId: "swsh12pt5", releaseYear: 2023 },
+  { name: "Prismatic Evolutions",  tcgdexId: "sv8pt5",    releaseYear: 2025, priceGBP: 4.99 },
+  { name: "Surging Sparks",        tcgdexId: "sv8",       releaseYear: 2024, priceGBP: 4.99 },
+  { name: "Stellar Crown",         tcgdexId: "sv7",       releaseYear: 2024, priceGBP: 4.99 },
+  { name: "Twilight Masquerade",   tcgdexId: "sv6",       releaseYear: 2024, priceGBP: 4.99 },
+  { name: "Temporal Forces",       tcgdexId: "sv5",       releaseYear: 2024, priceGBP: 4.99 },
+  { name: "Paldean Fates",         tcgdexId: "sv4pt5",    releaseYear: 2024, priceGBP: 4.99 },
+  { name: "Paradox Rift",          tcgdexId: "sv4",       releaseYear: 2023, priceGBP: 4.99 },
+  { name: "Obsidian Flames",       tcgdexId: "sv3",       releaseYear: 2023, priceGBP: 4.99 },
+  { name: "Scarlet & Violet Base", tcgdexId: "sv1",       releaseYear: 2023, priceGBP: 4.99 },
+  { name: "Crown Zenith",          tcgdexId: "swsh12pt5", releaseYear: 2023, priceGBP: 4.99 },
 ];
 
 // ─── Rarity normalisation ─────────────────────────────────────────────────────
@@ -158,7 +170,64 @@ interface TcgdexApiSet {
 
 // ─── API fetching ─────────────────────────────────────────────────────────────
 
-const TCGDEX_API_BASE = "https://api.tcgdex.net/v2/en";
+function getTcgdexApiBase(): string {
+  const base = process.env.TCGDEX_BASE_URL ?? "https://api.tcgdex.net";
+  return `${base}/v2/en`;
+}
+
+// ─── TCGdex sets list ─────────────────────────────────────────────────────────
+
+interface TcgdexApiSetSummary {
+  id?: string;
+  name?: string;
+  releaseDate?: string;
+}
+
+/**
+ * Fetch the full set list from the TCGdex API and resolve canonical IDs for
+ * each entry in POKEMON_SETS.
+ *
+ * Matching strategy (in order):
+ *   1. Exact id match against our hardcoded `tcgdexId`.
+ *   2. Normalised name match (lowercase, non-alphanumeric stripped).
+ *
+ * If neither match is found the hardcoded `tcgdexId` is used as-is so the
+ * caller always gets a usable result.
+ *
+ * @throws if the TCGdex sets-list request fails
+ */
+export async function fetchCanonicalSets(): Promise<PokemonSetSummary[]> {
+  const url = `${getTcgdexApiBase()}/sets`;
+  const res = await fetch(url, {
+    headers: { Accept: "application/json" },
+    next: { revalidate: 3600 },
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `TCGdex API error ${res.status} fetching sets list from "${url}". Body: ${await res.text()}`
+    );
+  }
+
+  const apiSets = (await res.json()) as TcgdexApiSetSummary[];
+
+  return POKEMON_SETS.map((known) => {
+    // 1. Exact ID match
+    let match = apiSets.find((s) => s.id === known.tcgdexId);
+    // 2. Normalised name match
+    if (!match) {
+      const normalised = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const targetName = normalised(known.name);
+      match = apiSets.find((s) => s.name && normalised(s.name) === targetName);
+    }
+    return {
+      id: match?.id ?? known.tcgdexId,
+      name: known.name,
+      releaseDate: match?.releaseDate ?? `${known.releaseYear}-01-01`,
+      priceGBP: known.priceGBP,
+    };
+  });
+}
 
 /**
  * Fetch all cards for a set from the TCGdex API.
@@ -188,7 +257,7 @@ export async function fetchSetCards(
     return cached.cards;
   }
 
-  const url = `${TCGDEX_API_BASE}/sets/${canonicalId}`;
+  const url = `${getTcgdexApiBase()}/sets/${canonicalId}`;
   const res = await fetch(url, {
     // Next.js route-level data cache: revalidate every hour
     next: { revalidate: 3600 },
@@ -196,7 +265,7 @@ export async function fetchSetCards(
 
   if (!res.ok) {
     throw new Error(
-      `TCGdex API error ${res.status} fetching set "${canonicalId}"`
+      `TCGdex API error ${res.status} fetching set "${canonicalId}" from "${url}"`
     );
   }
 

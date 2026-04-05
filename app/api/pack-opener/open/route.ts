@@ -4,7 +4,9 @@ import { getStripeSecretKey } from "@/lib/env";
 import { sql } from "@/lib/db";
 import { buildPackCards } from "@/lib/pack-opener";
 import { TCG_GAMES } from "@/lib/tcg-data";
+import { POKEMON_SETS, buildTcgdexPack, type TcgdexCard } from "@/lib/tcgdex";
 import { getCustomerFromRequest } from "@/lib/customer-auth";
+import type { TcgCard } from "@/lib/tcg-data";
 
 export async function GET(req: NextRequest) {
   try {
@@ -40,10 +42,26 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Missing pack metadata" }, { status: 400 });
     }
 
-    const game = TCG_GAMES.find(g => g.id === tcgId);
-    const set = game?.sets.find(s => s.id === setId);
-    if (!game || !set) {
-      return NextResponse.json({ error: "TCG or set not found" }, { status: 404 });
+    // Resolve game/set names.
+    // For Pokémon, use the canonical POKEMON_SETS list; for others use local TCG_GAMES.
+    let gameName: string;
+    let setName: string;
+
+    if (tcgId === "pokemon") {
+      const setMeta = POKEMON_SETS.find(s => s.tcgdexId === setId);
+      if (!setMeta) {
+        return NextResponse.json({ error: "Pokémon set not found" }, { status: 404 });
+      }
+      gameName = "Pokémon";
+      setName = setMeta.name;
+    } else {
+      const game = TCG_GAMES.find(g => g.id === tcgId);
+      const set = game?.sets.find(s => s.id === setId);
+      if (!game || !set) {
+        return NextResponse.json({ error: "TCG or set not found" }, { status: 404 });
+      }
+      gameName = game.name;
+      setName = set.name;
     }
 
     // Check if already opened
@@ -69,13 +87,26 @@ export async function GET(req: NextRequest) {
             rarity: c.card_rarity,
             setName: c.card_set,
           })),
-          tcg: game.name,
-          setName: set.name,
+          tcg: gameName,
+          setName,
         });
       }
 
-      // Generate new pack
-      const generatedCards = buildPackCards(tcgId, setId);
+      // Generate new pack.
+      // For Pokémon, use live TCGdex data; for others use local static data.
+      let generatedCards: TcgCard[] | TcgdexCard[];
+      if (tcgId === "pokemon") {
+        const setMeta = POKEMON_SETS.find(s => s.tcgdexId === setId)!;
+        try {
+          generatedCards = await buildTcgdexPack(setId, setMeta.name);
+        } catch (tcgdexErr) {
+          // TCGdex unavailable — fall back to local static card data
+          console.warn("[pack-opener/open] TCGdex unavailable, using local fallback:", tcgdexErr);
+          generatedCards = buildPackCards(tcgId, setId);
+        }
+      } else {
+        generatedCards = buildPackCards(tcgId, setId);
+      }
 
       // Optional customer from token
       const customer = await getCustomerFromRequest(req);
@@ -83,7 +114,7 @@ export async function GET(req: NextRequest) {
 
       const [opening] = await sql<{ id: number }[]>`
         INSERT INTO pack_openings (session_id, customer_id, tcg_id, set_id, tcg_name, set_name, status)
-        VALUES (${sessionId}, ${customerId}, ${tcgId}, ${setId}, ${game.name}, ${set.name}, 'opened')
+        VALUES (${sessionId}, ${customerId}, ${tcgId}, ${setId}, ${gameName}, ${setName}, 'opened')
         RETURNING id
       `;
 
@@ -101,18 +132,28 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({
         openingId,
         cards: generatedCards,
-        tcg: game.name,
-        setName: set.name,
+        tcg: gameName,
+        setName,
       });
     } catch (dbError) {
       // DB not available — return cards without persisting
       console.error("[pack-opener/open] DB error:", dbError);
-      const generatedCards = buildPackCards(tcgId, setId);
+      let fallbackCards: TcgCard[] | TcgdexCard[];
+      if (tcgId === "pokemon") {
+        const setMeta = POKEMON_SETS.find(s => s.tcgdexId === setId);
+        try {
+          fallbackCards = setMeta ? await buildTcgdexPack(setId, setMeta.name) : buildPackCards(tcgId, setId);
+        } catch {
+          fallbackCards = buildPackCards(tcgId, setId);
+        }
+      } else {
+        fallbackCards = buildPackCards(tcgId, setId);
+      }
       return NextResponse.json({
         openingId: 0,
-        cards: generatedCards,
-        tcg: game.name,
-        setName: set.name,
+        cards: fallbackCards,
+        tcg: gameName,
+        setName,
       });
     }
   } catch (error) {
