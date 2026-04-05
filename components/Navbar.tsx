@@ -9,6 +9,7 @@ const SHOP_LINKS = [
   { href: "/blind-boxes", label: "Blind Boxes" },
   { href: "/tcg", label: "TCG" },
   { href: "/mystery-crates", label: "Mystery Crates" },
+  { href: "/pack-opener", label: "Pack Opener" },
 ];
 
 export default function Navbar() {
@@ -91,6 +92,9 @@ export default function Navbar() {
 
           <Link href="/blind-boxes" className={styles.navLink}>
             New Arrivals
+          </Link>
+          <Link href="/pack-opener" className={styles.navLink}>
+            Pack Opener
           </Link>
           <Link href="/about" className={styles.navLink}>
             About

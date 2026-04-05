@@ -1,0 +1,645 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&display=swap');
+
+.page {
+  min-height: 100vh;
+  background: #0a0a0f;
+  color: #e0e0e0;
+  font-family: system-ui, sans-serif;
+  padding-bottom: 4rem;
+}
+
+/* ─── Hero ─────────────────────────────────────────────────────────────── */
+.hero {
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+  background: linear-gradient(180deg, #0d0d1a 0%, #0a0a0f 100%);
+  border-bottom: 1px solid #1a1a2e;
+}
+
+.heroTitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  background: linear-gradient(135deg, #00d4ff 0%, #9d4edd 50%, #ffd700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 0.75rem;
+  text-transform: uppercase;
+}
+
+.heroSub {
+  color: #8888aa;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* ─── Container ────────────────────────────────────────────────────────── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* ─── Step label ────────────────────────────────────────────────────────── */
+.stepLabel {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #00d4ff;
+  margin: 0 0 0.5rem;
+}
+
+.stepTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #e0e0e0;
+  margin: 0 0 2rem;
+}
+
+/* ─── TCG Game Grid ─────────────────────────────────────────────────────── */
+.gameGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.25rem;
+}
+
+.gameCard {
+  background: #0e0e1a;
+  border: 1px solid #1e1e3a;
+  border-radius: 12px;
+  padding: 1.75rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.gameCard:hover {
+  border-color: #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.gameCard.selected {
+  border-color: #9d4edd;
+  box-shadow: 0 0 24px rgba(157, 78, 221, 0.4);
+}
+
+.gameIcon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.gameName {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #c0c0d8;
+}
+
+.selectBtn {
+  margin-top: 0.25rem;
+  padding: 0.4rem 1.1rem;
+  border-radius: 6px;
+  border: 1px solid #00d4ff;
+  background: transparent;
+  color: #00d4ff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.selectBtn:hover {
+  background: #00d4ff;
+  color: #0a0a0f;
+}
+
+/* ─── Breadcrumb / selection header ────────────────────────────────────── */
+.selectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.selectionBadge {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4e;
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #c0c0d8;
+}
+
+.changeBtn {
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #333355;
+  background: transparent;
+  color: #8888aa;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.changeBtn:hover {
+  border-color: #00d4ff;
+  color: #00d4ff;
+}
+
+/* ─── Set Grid ──────────────────────────────────────────────────────────── */
+.setGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.setCard {
+  background: #0e0e1a;
+  border: 1px solid #1e1e3a;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.setCard:hover {
+  border-color: #9d4edd;
+  box-shadow: 0 0 20px rgba(157, 78, 221, 0.2);
+  transform: translateY(-2px);
+}
+
+.setPackImage {
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #2a1a3e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+.setInfo {
+  padding: 1rem;
+}
+
+.setName {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #e0e0e0;
+  margin: 0 0 0.35rem;
+}
+
+.setMeta {
+  font-size: 0.75rem;
+  color: #666688;
+  margin: 0 0 0.75rem;
+}
+
+.openPackBtn {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #9d4edd, #6b2fa0);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.openPackBtn:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+/* ─── Checkout ──────────────────────────────────────────────────────────── */
+.checkoutBox {
+  max-width: 480px;
+  margin: 0 auto;
+  background: #0e0e1a;
+  border: 1px solid #2a1a3e;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.checkoutTitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  color: #e0e0e0;
+  margin: 0 0 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+.checkoutSummary {
+  background: #0a0a14;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.checkoutRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #c0c0d8;
+  margin-bottom: 0.5rem;
+}
+
+.checkoutRow:last-child {
+  margin-bottom: 0;
+  font-weight: 700;
+  color: #ffd700;
+  font-size: 1rem;
+  border-top: 1px solid #1a1a2e;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.payBtn {
+  width: 100%;
+  padding: 0.9rem;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #00d4ff 0%, #0090aa 100%);
+  color: #0a0a0f;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.payBtn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: scale(1.01);
+}
+
+.payBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.backLink {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #666688;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.backLink:hover {
+  color: #9d4edd;
+}
+
+/* ─── Loading / Opening ─────────────────────────────────────────────────── */
+.loadingCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 56px;
+  height: 56px;
+  border: 4px solid #1a1a2e;
+  border-top-color: #00d4ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loadingText {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: #00d4ff;
+  text-transform: uppercase;
+}
+
+/* ─── Pack Opening ──────────────────────────────────────────────────────── */
+.packOpeningArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1.5rem;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.packWrapper {
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.packWrapper:hover .packImage {
+  box-shadow: 0 0 40px rgba(157, 78, 221, 0.8), 0 0 80px rgba(0, 212, 255, 0.4);
+}
+
+.packImage {
+  width: 200px;
+  height: 280px;
+  background: linear-gradient(135deg, #2a1a3e 0%, #1a0a2e 50%, #2a1a3e 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  box-shadow: 0 0 30px rgba(157, 78, 221, 0.5), 0 0 60px rgba(0, 212, 255, 0.2);
+  animation: packPulse 2s ease-in-out infinite, packShake 0.3s ease-in-out infinite;
+  border: 2px solid #9d4edd;
+}
+
+@keyframes packPulse {
+  0%, 100% { box-shadow: 0 0 30px rgba(157, 78, 221, 0.5), 0 0 60px rgba(0, 212, 255, 0.2); }
+  50% { box-shadow: 0 0 50px rgba(157, 78, 221, 0.8), 0 0 100px rgba(0, 212, 255, 0.4); }
+}
+
+@keyframes packShake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-2px) rotate(-0.5deg); }
+  75% { transform: translateX(2px) rotate(0.5deg); }
+}
+
+.packHint {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: #9d4edd;
+  text-transform: uppercase;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.packMeta {
+  font-size: 0.9rem;
+  color: #8888aa;
+}
+
+.packMetaBold {
+  color: #e0e0e0;
+  font-weight: 600;
+}
+
+/* ─── Card Reveal Grid ──────────────────────────────────────────────────── */
+.revealSection {
+  padding: 1rem 0;
+}
+
+.revealHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.revealTitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffd700, #ff8800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.1em;
+}
+
+.revealSub {
+  color: #8888aa;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.cardItem {
+  animation: cardSlideIn 0.5s ease-out both;
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cardInner {
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0e0e1a;
+  border: 1px solid #1e1e3a;
+  transition: transform 0.2s;
+}
+
+.cardInner:hover {
+  transform: scale(1.04);
+}
+
+.cardInner.glowNone {
+  border-color: #1e1e3a;
+}
+
+.cardInner.glowBlue {
+  border-color: #3b82f6;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
+.cardInner.glowPurple {
+  border-color: #9d4edd;
+  box-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
+}
+
+.cardInner.glowCyan {
+  border-color: #00d4ff;
+  box-shadow: 0 0 18px rgba(0, 212, 255, 0.5);
+}
+
+.cardInner.glowGold {
+  border-color: #ffd700;
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.6), 0 0 48px rgba(255, 215, 0, 0.3);
+  animation: rainbowGlow 2s linear infinite;
+}
+
+@keyframes rainbowGlow {
+  0% { box-shadow: 0 0 24px rgba(255, 0, 0, 0.6); border-color: #ff0000; }
+  16% { box-shadow: 0 0 24px rgba(255, 165, 0, 0.6); border-color: #ffa500; }
+  33% { box-shadow: 0 0 24px rgba(255, 215, 0, 0.6); border-color: #ffd700; }
+  50% { box-shadow: 0 0 24px rgba(0, 212, 255, 0.6); border-color: #00d4ff; }
+  66% { box-shadow: 0 0 24px rgba(157, 78, 221, 0.6); border-color: #9d4edd; }
+  83% { box-shadow: 0 0 24px rgba(255, 105, 180, 0.6); border-color: #ff69b4; }
+  100% { box-shadow: 0 0 24px rgba(255, 0, 0, 0.6); border-color: #ff0000; }
+}
+
+.cardImg {
+  width: 100%;
+  aspect-ratio: 5/7;
+  object-fit: cover;
+  display: block;
+}
+
+.cardImgPlaceholder {
+  width: 100%;
+  aspect-ratio: 5/7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.cardLabel {
+  padding: 0.5rem 0.6rem 0.6rem;
+}
+
+.cardName {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin: 0 0 0.3rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rarityBadge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.rarityCommon { background: #2a2a2a; color: #aaaaaa; }
+.rarityUncommon { background: #1a2a4a; color: #60a0ff; }
+.rarityRare { background: #2a1a4a; color: #b07fff; }
+.rarityHolo { background: #1a2a4a; color: #00d4ff; }
+.rarityUltra { background: #3a2a00; color: #ffd700; }
+.raritySecret { background: #3a0020; color: #ff69b4; }
+.rarityMythic { background: #3a1a00; color: #ff8800; }
+.raritySuper { background: #3a2a00; color: #ffd700; }
+.raritySpecial { background: #3a0030; color: #ee44ee; }
+
+/* ─── Actions after reveal ──────────────────────────────────────────────── */
+.revealActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0 2rem;
+}
+
+.shipBtn {
+  padding: 0.85rem 2.5rem;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+  color: #0a0a0f;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.08em;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.shipBtn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.shipBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shipSuccess {
+  color: #4ade80;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.historyLink {
+  color: #9d4edd;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.historyLink:hover {
+  color: #c07fff;
+}
+
+.openAnotherBtn {
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #2a2a4e;
+  background: transparent;
+  color: #8888aa;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.openAnotherBtn:hover {
+  border-color: #9d4edd;
+  color: #9d4edd;
+}
+
+/* ─── Error ─────────────────────────────────────────────────────────────── */
+.errorBox {
+  background: #2a0a0a;
+  border: 1px solid #5a1a1a;
+  border-radius: 10px;
+  padding: 1.5rem;
+  color: #ff8888;
+  text-align: center;
+  max-width: 480px;
+  margin: 2rem auto;
+}

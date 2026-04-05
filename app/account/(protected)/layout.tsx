@@ -10,6 +10,7 @@ const navLinks = [
   { href: '/account/profile', label: 'Profile' },
   { href: '/account/addresses', label: 'Addresses' },
   { href: '/account/orders', label: 'Orders' },
+  { href: '/account/pack-history', label: 'Pack History' },
   { href: '/account/wishlist', label: 'Wishlist' },
   { href: '/account/cart', label: 'Cart' },
 ];

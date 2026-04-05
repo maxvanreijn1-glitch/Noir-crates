@@ -1,0 +1,152 @@
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--bg-dark);
+  margin: 0 0 1.5rem;
+}
+
+.loading {
+  color: #888;
+  padding: 2rem 0;
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+}
+
+.shopLink {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 2px solid #e8e4de;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e8e4de;
+  vertical-align: top;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.statusOpened { background: #e0f0ff; color: #1a6aa0; }
+.statusShipRequested { background: #fff3cd; color: #856404; }
+.statusShipped { background: #d1fae5; color: #065f46; }
+.statusDefault { background: #f0f0f0; color: #555; }
+
+.expandBtn {
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background: transparent;
+  font-size: 0.8rem;
+  color: #555;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.expandBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.cardsRow td {
+  background: #fafaf8;
+  padding: 1rem 0.75rem;
+}
+
+.cardChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cardChip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #fff;
+  border: 1px solid #e8e4de;
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  color: #333;
+}
+
+.chipRarity {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.rarityCommon { background: #eee; color: #666; }
+.rarityUncommon { background: #dbeafe; color: #1d4ed8; }
+.rarityRare { background: #ede9fe; color: #6d28d9; }
+.rarityHolo { background: #cffafe; color: #0e7490; }
+.rarityUltra { background: #fef3c7; color: #92400e; }
+.raritySecret { background: #fce7f3; color: #9d174d; }
+.rarityMythic { background: #ffedd5; color: #c2410c; }
+.raritySuper { background: #fef3c7; color: #92400e; }
+.raritySpecial { background: #fae8ff; color: #7e22ce; }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.pageBtn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: transparent;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
