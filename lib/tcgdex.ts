@@ -173,18 +173,22 @@ export async function fetchSetCards(
   tcgdexId: string,
   setDisplayName: string
 ): Promise<TcgdexCard[]> {
-  // Guard against SSRF — only allow IDs from the canonical allowlist
-  if (!POKEMON_SETS.some((s) => s.tcgdexId === tcgdexId)) {
+  // Guard against SSRF — only allow IDs from the canonical allowlist, and use
+  // the value sourced from the allowlist (not the raw user input) in the URL.
+  const setMeta = POKEMON_SETS.find((s) => s.tcgdexId === tcgdexId);
+  if (!setMeta) {
     throw new Error(`Set ID "${tcgdexId}" is not in the allowed set list`);
   }
+  // Use the canonical value from the allowlist, not the raw caller argument
+  const canonicalId = setMeta.tcgdexId;
 
   // Serve from cache if still fresh
-  const cached = _cardCache.get(tcgdexId);
+  const cached = _cardCache.get(canonicalId);
   if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
     return cached.cards;
   }
 
-  const url = `${TCGDEX_API_BASE}/sets/${tcgdexId}`;
+  const url = `${TCGDEX_API_BASE}/sets/${canonicalId}`;
   const res = await fetch(url, {
     // Next.js route-level data cache: revalidate every hour
     next: { revalidate: 3600 },
@@ -192,7 +196,7 @@ export async function fetchSetCards(
 
   if (!res.ok) {
     throw new Error(
-      `TCGdex API error ${res.status} fetching set "${tcgdexId}"`
+      `TCGdex API error ${res.status} fetching set "${canonicalId}"`
     );
   }
 
@@ -200,10 +204,10 @@ export async function fetchSetCards(
   const rawCards: TcgdexApiCard[] = data.cards ?? [];
 
   const cards: TcgdexCard[] = rawCards
-    .filter((c): c is TcgdexApiCard & { name: string } => Boolean(c.name))
+    .filter((c): c is TcgdexApiCard & { name: string } => typeof c.name === "string" && c.name.length > 0)
     .map((c) => ({
-      id: c.id ?? `${tcgdexId}-${c.localId ?? "unknown"}`,
-      name: c.name!,
+      id: c.id ?? `${canonicalId}-${c.localId ?? "unknown"}`,
+      name: c.name,
       // TCGdex image fields omit the file extension; append /high.webp for HQ
       image: c.image ? `${c.image}/high.webp` : "",
       rarity: normalizeRarity(c.rarity),
@@ -211,7 +215,7 @@ export async function fetchSetCards(
     }))
     .filter((c) => c.image !== "");
 
-  _cardCache.set(tcgdexId, { cards, fetchedAt: Date.now() });
+  _cardCache.set(canonicalId, { cards, fetchedAt: Date.now() });
   return cards;
 }
 

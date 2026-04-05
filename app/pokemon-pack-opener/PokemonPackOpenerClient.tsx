@@ -183,9 +183,6 @@ export default function PokemonPackOpenerClient() {
                       fill
                       sizes="160px"
                       className={styles.cardImg}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = "none";
-                      }}
                     />
                   </div>
                     <div className={styles.cardLabel}>
