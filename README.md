@@ -350,86 +350,8 @@ To reset: delete all rows from `admin_users` in your Supabase dashboard, then re
 4. Deploy. The `vercel.json` build command (`npm run db:migrate && next build`) automatically
    runs the migration before building. The migration is idempotent — safe on every deploy.
 
-## Pack Opener (`/pack-opener`)
-
-A fully data-driven virtual TCG booster pack opening feature.
-
-### How it works
-
-1. **Choose TCG** — Pokémon, Yu-Gi-Oh!, Magic: The Gathering, One Piece, or Dragon Ball Super
-2. **Choose Set** — pick any available set for that game
-3. **Choose Pack Type** — Basic, Premium, or Elite (each with different odds and guarantees)
-4. **Reveal Cards** — sequential reveal with rarity-based animations
-
-### API Integration
-
-**Pokémon sets** use the [TCGdex API](https://api.tcgdex.net) (no API key required) to fetch real card images at `https://assets.tcgdex.net/…/high.webp`. Responses are cached for 24 hours via Next.js fetch cache. If TCGdex is unavailable the system falls back to static placeholder art.
-
-All other TCGs (Yu-Gi-Oh!, MTG, One Piece, Dragon Ball Super) use built-in static card data.
-
-The provider layer lives in `lib/tcg/`:
-- `lib/tcg/index.ts` — shared `Card` type + `TcgProvider` interface
-- `lib/tcg/tcgdex.ts` — TCGdex Pokémon provider (add more providers here)
-
-### Pack Types & Odds
-
-| Pack Type | Price Multiplier | Guarantee |
-|-----------|-----------------|-----------|
-| Basic     | 1× base price   | None — pure weighted RNG |
-| Premium   | 1.5× base price | ≥ 1 Holo or better |
-| Elite     | 2.5× base price | ≥ 1 Ultra-Rare or better + ≥ 1 Holo |
-
-Base rarity odds per TCG (approximate percentages):
-
-| TCG | Common | Uncommon | Rare | Holo | Ultra/Secret |
-|-----|--------|----------|------|------|--------------|
-| Pokémon | 55% | 30% | 10% | 3% | 2% |
-| Yu-Gi-Oh! | 60% | — | 20% | — | 18% + 2% |
-| MTG | 50% | 30% | 15% | — | 5% |
-| One Piece | 55% | 25% | 13% | — | 5% + 2% |
-| Dragon Ball Super | 55% | 25% | 12% | — | 6% + 2% |
-
-Premium and Elite packs multiply these weights (common reduced, rare+ increased) before selection.
-
-### Progressive Boost Meter
-
-A **boost meter** (0–100) is stored in the browser's `localStorage` under the key `noir_boost_meter`. It:
-- **Increases** by 5–15 points per pack opened (higher-tier packs charge it faster)
-- **Decays** when a high-rarity card is pulled:
-  - Secret/Special Rare: reset to 0
-  - Ultra-Rare/Mythic: halved
-  - Holo: reduced by 25%
-- **Caps** at 100
-- **Effect**: scales rare+ odds up to 50% higher than base at max charge (common odds decrease proportionally)
-
-The meter is sent to the server in the Stripe checkout metadata and admin-open request. The server applies it during card selection and returns the updated value after the pack is opened.
-
-### Project structure
-
+## Project Structure
 ```
-lib/
-  tcg/
-    index.ts           # Card type + TcgProvider interface
-    tcgdex.ts          # TCGdex API provider (Pokémon real card art)
-  packs/
-    types.ts           # PackType, BoostMeter, PackConfig
-    generator.ts       # generatePack() — weighted odds + boost + guarantees
-  tcg-data.ts          # Static card database (all 5 TCGs); adds tcgdexSetId mapping
-  pack-opener.ts       # buildPackCards (sync) + buildPackCardsAsync (TCGdex + fallback)
-app/
-  pack-opener/
-    page.tsx           # Server component wrapper
-    PackOpenerClient.tsx # Interactive UI — TCG/set/pack-type selection, reveal
-    pack-opener.module.css # Rarity glow, boost meter, pack type styles
-  api/pack-opener/
-    checkout/route.ts  # POST — creates Stripe session with packType + boostMeter
-    open/route.ts      # GET  — verifies payment, calls buildPackCardsAsync
-    admin-open/route.ts # POST — admin free-open with packType
-    ship/route.ts      # POST — request physical card shipment
-    history/route.ts   # GET  — paginated pack history
-```
-
-
 app/
   layout.tsx              # Root layout with CartProvider, Navbar, Footer
   page.tsx                # Home page with hero + product grid

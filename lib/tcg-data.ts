@@ -15,8 +15,6 @@ export interface TcgSet {
   packImage: string;
   priceGBP: number;
   cards: TcgCard[];
-  /** TCGdex set ID used to fetch real card data + images for Pokémon sets */
-  tcgdexSetId?: string;
 }
 
 export interface TcgGame {
@@ -70,7 +68,6 @@ const pokemonSets: TcgSet[] = [
     releaseDate: "2025-01-17",
     packImage: "/pack-opener/packs/pokemon-prismatic-evolutions.png",
     priceGBP: 4.99,
-    tcgdexSetId: "sv8pt5",
     cards: makeCards("Prismatic Evolutions", [
       { rarity: "common", names: ["Eevee", "Flareon Token", "Vaporeon Token", "Jolteon Token", "Sylveon Token", "Espeon Token", "Umbreon Token", "Leafeon Token"] },
       { rarity: "uncommon", names: ["Eevee EX", "Espeon", "Jolteon", "Flareon", "Vaporeon", "Leafeon"] },
@@ -85,7 +82,6 @@ const pokemonSets: TcgSet[] = [
     releaseDate: "2024-09-13",
     packImage: "/pack-opener/packs/pokemon-stellar-crown.png",
     priceGBP: 4.99,
-    tcgdexSetId: "sv7",
     cards: makeCards("Stellar Crown", [
       { rarity: "common", names: ["Pikachu", "Charmander", "Squirtle", "Bulbasaur", "Caterpie", "Weedle", "Pidgey", "Rattata"] },
       { rarity: "uncommon", names: ["Raichu", "Charmeleon", "Wartortle", "Ivysaur", "Butterfree", "Pidgeotto"] },
@@ -100,7 +96,6 @@ const pokemonSets: TcgSet[] = [
     releaseDate: "2024-11-08",
     packImage: "/pack-opener/packs/pokemon-surging-sparks.png",
     priceGBP: 4.99,
-    tcgdexSetId: "sv8",
     cards: makeCards("Surging Sparks", [
       { rarity: "common", names: ["Electabuzz", "Mareep", "Flaaffy", "Voltorb", "Electrode", "Magnemite", "Magneton", "Joltik"] },
       { rarity: "uncommon", names: ["Ampharos", "Raichu", "Magnezone", "Galvantula", "Zebstrika"] },
@@ -115,7 +110,6 @@ const pokemonSets: TcgSet[] = [
     releaseDate: "2024-05-24",
     packImage: "/pack-opener/packs/pokemon-twilight-masquerade.png",
     priceGBP: 4.99,
-    tcgdexSetId: "sv6",
     cards: makeCards("Twilight Masquerade", [
       { rarity: "common", names: ["Ogerpon", "Terapagos", "Munkidori", "Okidogi", "Fezandipiti", "Applin", "Appletun", "Flapple"] },
       { rarity: "uncommon", names: ["Ogerpon ex", "Terapagos ex", "Munkidori ex", "Pecharunt"] },
@@ -130,7 +124,6 @@ const pokemonSets: TcgSet[] = [
     releaseDate: "2024-03-22",
     packImage: "/pack-opener/packs/pokemon-temporal-forces.png",
     priceGBP: 4.99,
-    tcgdexSetId: "sv5",
     cards: makeCards("Temporal Forces", [
       { rarity: "common", names: ["Iron Leaves", "Walking Wake", "Sandy Shocks", "Flutter Mane", "Brute Bonnet", "Scream Tail", "Iron Bundle", "Iron Hands"] },
       { rarity: "uncommon", names: ["Iron Crown ex", "Walking Wake ex", "Iron Boulder ex", "Gouging Fire ex"] },
@@ -145,7 +138,6 @@ const pokemonSets: TcgSet[] = [
     releaseDate: "2024-01-26",
     packImage: "/pack-opener/packs/pokemon-paldean-fates.png",
     priceGBP: 5.49,
-    tcgdexSetId: "sv4pt5",
     cards: makeCards("Paldean Fates", [
       { rarity: "common", names: ["Sprigatito", "Fuecoco", "Quaxly", "Lechonk", "Tarountula", "Flittle", "Pawmi", "Smoliv"] },
       { rarity: "uncommon", names: ["Meowscarada ex", "Skeledirge ex", "Quaquaval ex", "Ceruledge ex"] },
@@ -160,7 +152,6 @@ const pokemonSets: TcgSet[] = [
     releaseDate: "2023-11-03",
     packImage: "/pack-opener/packs/pokemon-paradox-rift.png",
     priceGBP: 4.99,
-    tcgdexSetId: "sv4",
     cards: makeCards("Paradox Rift", [
       { rarity: "common", names: ["Roaring Moon", "Iron Valiant", "Sandy Shocks", "Iron Treads", "Slither Wing", "Iron Jugulis", "Iron Moth", "Flutter Mane"] },
       { rarity: "uncommon", names: ["Roaring Moon ex", "Iron Valiant ex", "Garchomp ex", "Dragapult ex"] },
@@ -175,7 +166,6 @@ const pokemonSets: TcgSet[] = [
     releaseDate: "2023-08-11",
     packImage: "/pack-opener/packs/pokemon-obsidian-flames.png",
     priceGBP: 4.99,
-    tcgdexSetId: "sv3",
     cards: makeCards("Obsidian Flames", [
       { rarity: "common", names: ["Charmander", "Charmeleon", "Larvitar", "Pupitar", "Darumaka", "Litwick", "Lampent", "Fuecoco"] },
       { rarity: "uncommon", names: ["Tyranitar ex", "Charizard ex", "Revavroom ex", "Cinderace ex"] },
@@ -190,7 +180,6 @@ const pokemonSets: TcgSet[] = [
     releaseDate: "2023-03-31",
     packImage: "/pack-opener/packs/pokemon-sv-base.png",
     priceGBP: 4.49,
-    tcgdexSetId: "sv1",
     cards: makeCards("Scarlet & Violet Base", [
       { rarity: "common", names: ["Sprigatito", "Fuecoco", "Quaxly", "Pikachu", "Pawmi", "Lechonk", "Smoliv", "Tarountula"] },
       { rarity: "uncommon", names: ["Arcanine ex", "Gyarados ex", "Lucario ex", "Miraidon ex"] },
@@ -205,7 +194,6 @@ const pokemonSets: TcgSet[] = [
     releaseDate: "2023-01-20",
     packImage: "/pack-opener/packs/pokemon-crown-zenith.png",
     priceGBP: 4.99,
-    tcgdexSetId: "swsh12pt5",
     cards: makeCards("Crown Zenith", [
       { rarity: "common", names: ["Zacian", "Zamazenta", "Eternatus", "Kubfu", "Urshifu", "Calyrex", "Glastrier", "Spectrier"] },
       { rarity: "uncommon", names: ["Zacian V", "Zamazenta V", "Eternatus V", "Calyrex Ice Rider V"] },

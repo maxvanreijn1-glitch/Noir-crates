@@ -3,24 +3,11 @@ import Stripe from "stripe";
 import { getStripeSecretKey, getBaseUrl } from "@/lib/env";
 import { getCustomerFromRequest } from "@/lib/customer-auth";
 import { TCG_GAMES } from "@/lib/tcg-data";
-import type { PackType } from "@/lib/packs/types";
-import { PACK_TYPE_PRICE_MULTIPLIERS } from "@/lib/packs/types";
-
-const VALID_PACK_TYPES: PackType[] = ["basic", "premium", "elite"];
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json() as {
-      tcgId?: string;
-      setId?: string;
-      packType?: string;
-      boostMeter?: number;
-    };
+    const body = await req.json() as { tcgId?: string; setId?: string };
     const { tcgId, setId } = body;
-    const packType: PackType = VALID_PACK_TYPES.includes(body.packType as PackType)
-      ? (body.packType as PackType)
-      : "basic";
-    const boostMeter = Math.min(100, Math.max(0, Math.round(body.boostMeter ?? 0)));
 
     if (!tcgId || !setId) {
       return NextResponse.json({ error: "tcgId and setId are required" }, { status: 400 });
@@ -43,15 +30,10 @@ export async function POST(req: NextRequest) {
     });
     const baseUrl = getBaseUrl();
 
-    const priceMultiplier = PACK_TYPE_PRICE_MULTIPLIERS[packType];
-    const unitAmount = Math.round(set.priceGBP * priceMultiplier * 100);
-
     const metadata: Record<string, string> = {
       type: "pack_opener",
       tcgId,
       setId,
-      packType,
-      boostMeter: String(boostMeter),
     };
     if (customer) {
       metadata.customerId = String(customer.id);
@@ -64,10 +46,10 @@ export async function POST(req: NextRequest) {
           quantity: 1,
           price_data: {
             currency: "gbp",
-            unit_amount: unitAmount,
+            unit_amount: Math.round(set.priceGBP * 100),
             product_data: {
-              name: `${game.name} — ${set.name} ${packType.charAt(0).toUpperCase() + packType.slice(1)} Pack`,
-              description: `Virtual ${packType} booster pack opening for ${set.name}`,
+              name: `${game.name} — ${set.name} Booster Pack`,
+              description: `Virtual booster pack opening for ${set.name}`,
             },
           },
         },
@@ -83,4 +65,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-
