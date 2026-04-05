@@ -28,15 +28,27 @@ A free virtual Pokémon TCG pack-opening simulator powered entirely by the
 [TCGdex public API](https://api.tcgdex.net). No payment required — real card
 images and data are fetched live from TCGdex.
 
+> **Note**: The main **Pack Opener** page (`/pack-opener`) also uses TCGdex for Pokémon sets.
+> Canonical set IDs are resolved via `GET /api/tcgdex/sets` (backed by the live TCGdex API
+> with automatic fallback to local data if TCGdex is unreachable).
+
 ### How it works
 
-1. **Select a set** from the dropdown (10 supported sets, see table below).
+1. **Select a set** from the list (10 supported sets, see table below).
 2. Click **Open Pack** — the browser POSTs to `/api/pack-opener/tcgdex-open`.
 3. The server fetches the full card list for that set from
    `https://api.tcgdex.net/v2/en/sets/{setId}`.
 4. Pack cards are generated using the weighted rarity system (see Odds below).
 5. Five cards are returned and revealed one by one in the browser.
 6. Card images are loaded directly from `https://assets.tcgdex.net`.
+
+### Set ID resolution
+
+Pokémon set IDs are resolved dynamically at runtime by querying
+`https://api.tcgdex.net/v2/en/sets` and matching against the canonical list in
+`lib/tcgdex.ts` (`POKEMON_SETS`). This ensures the IDs used in API calls are
+always what TCGdex expects.  If TCGdex is unreachable, the hardcoded fallback
+IDs in `POKEMON_SETS` are used instead.
 
 ### Caching
 
@@ -87,6 +99,16 @@ values default to `common`.
 | Crown Zenith | `swsh12pt5` | 2023 |
 
 The canonical mapping lives in `lib/tcgdex.ts` (`POKEMON_SETS` array).
+
+### Environment variables for TCGdex
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `TCGDEX_BASE_URL` | No | `https://api.tcgdex.net` | Base URL of the TCGdex API. Override for local mocks or staging. |
+
+The `GET /api/tcgdex/sets` endpoint resolves canonical set IDs at runtime by
+querying TCGdex.  Set IDs used in all Pokémon pack-opening API calls come from
+this resolved list, eliminating 404s caused by mismatched hardcoded IDs.
 
 ---
 
@@ -357,6 +379,9 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 
 # App URL
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# TCGdex (optional — see below)
+# TCGDEX_BASE_URL=https://api.tcgdex.net
 
 # Admin auth (change in production!)
 ADMIN_JWT_SECRET=change-me-to-a-long-random-string-at-least-32-chars

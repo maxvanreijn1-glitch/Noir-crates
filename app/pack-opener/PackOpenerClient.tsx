@@ -3,10 +3,22 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { TCG_GAMES, type TcgGame, type TcgSet } from "@/lib/tcg-data";
+import { TCG_GAMES, type TcgGame } from "@/lib/tcg-data";
+import type { PokemonSetSummary } from "@/lib/tcgdex";
 import styles from "./pack-opener.module.css";
 
 type Step = "selectingTcg" | "selectingSet" | "checkout" | "opening" | "revealed" | "error";
+
+/**
+ * A set entry used in the selection UI.
+ * For Pokémon, populated from /api/tcgdex/sets; for other games from local data.
+ */
+interface SelectableSet {
+  id: string;
+  name: string;
+  releaseDate: string;
+  priceGBP: number;
+}
 
 interface TcgCard {
   id: string;
@@ -63,7 +75,9 @@ export default function PackOpenerClient() {
 
   const [step, setStep] = useState<Step>("selectingTcg");
   const [selectedGame, setSelectedGame] = useState<TcgGame | null>(null);
-  const [selectedSet, setSelectedSet] = useState<TcgSet | null>(null);
+  const [selectedSet, setSelectedSet] = useState<SelectableSet | null>(null);
+  /** Pokémon sets loaded from the TCGdex API (canonical IDs). null = not yet loaded. */
+  const [pokemonSets, setPokemonSets] = useState<PokemonSetSummary[] | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [openResult, setOpenResult] = useState<OpenResult | null>(null);
@@ -83,6 +97,31 @@ export default function PackOpenerClient() {
         }
       });
   }, []);
+
+  // Load Pokémon sets from the TCGdex API when the Pokémon game is selected
+  useEffect(() => {
+    if (selectedGame?.id !== "pokemon") return;
+    if (pokemonSets !== null) return; // already loaded
+    fetch("/api/tcgdex/sets")
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json() as Promise<PokemonSetSummary[]>;
+      })
+      .then((data) => setPokemonSets(data))
+      .catch((err) => {
+        console.warn("[PackOpener] Failed to load Pokémon sets from API, using local fallback:", err);
+        // Fallback: use TCG_GAMES Pokémon sets converted to SelectableSet shape
+        const fallback = TCG_GAMES.find(g => g.id === "pokemon")?.sets ?? [];
+        setPokemonSets(
+          fallback.map(s => ({
+            id: s.id,
+            name: s.name,
+            releaseDate: s.releaseDate,
+            priceGBP: s.priceGBP,
+          }))
+        );
+      });
+  }, [selectedGame, pokemonSets]);
 
   // When session_id is present, open the pack
   const openPack = useCallback(async (sid: string) => {
@@ -212,6 +251,7 @@ export default function PackOpenerClient() {
     setStep("selectingTcg");
     setSelectedGame(null);
     setSelectedSet(null);
+    setPokemonSets(null);
     setError(null);
     setOpenResult(null);
     setPackClicked(false);
@@ -286,32 +326,43 @@ export default function PackOpenerClient() {
                 <span>{selectedGame.icon}</span>
                 <span>{selectedGame.name}</span>
               </div>
-              <button className={styles.changeBtn} onClick={() => { setStep("selectingTcg"); setSelectedGame(null); }}>
+              <button className={styles.changeBtn} onClick={() => { setStep("selectingTcg"); setSelectedGame(null); setPokemonSets(null); }}>
                 Change
               </button>
             </div>
             <h2 className={styles.stepTitle}>Choose a Set</h2>
-            <div className={styles.setGrid}>
-              {selectedGame.sets.map(set => (
-                <div key={set.id} className={styles.setCard}>
-                  <div className={styles.setPackImage}>
-                    {selectedGame.icon}
+            {selectedGame.id === "pokemon" && pokemonSets === null && (
+              <div className={styles.loadingCenter}>
+                <div className={styles.spinner} />
+                <p className={styles.loadingText}>Loading sets…</p>
+              </div>
+            )}
+            {!(selectedGame.id === "pokemon" && pokemonSets === null) && (
+              <div className={styles.setGrid}>
+                {(selectedGame.id === "pokemon"
+                  ? (pokemonSets ?? [])
+                  : selectedGame.sets.map(s => ({ id: s.id, name: s.name, releaseDate: s.releaseDate, priceGBP: s.priceGBP }))
+                ).map(set => (
+                  <div key={set.id} className={styles.setCard}>
+                    <div className={styles.setPackImage}>
+                      {selectedGame.icon}
+                    </div>
+                    <div className={styles.setInfo}>
+                      <p className={styles.setName}>{set.name}</p>
+                      <p className={styles.setMeta}>
+                        Released: {new Date(set.releaseDate).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
+                      </p>
+                      <button
+                        className={styles.openPackBtn}
+                        onClick={() => { setSelectedSet(set); setStep("checkout"); }}
+                      >
+                        Open Pack — £{set.priceGBP.toFixed(2)}
+                      </button>
+                    </div>
                   </div>
-                  <div className={styles.setInfo}>
-                    <p className={styles.setName}>{set.name}</p>
-                    <p className={styles.setMeta}>
-                      Released: {new Date(set.releaseDate).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
-                    </p>
-                    <button
-                      className={styles.openPackBtn}
-                      onClick={() => { setSelectedSet(set); setStep("checkout"); }}
-                    >
-                      Open Pack — £{set.priceGBP.toFixed(2)}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
