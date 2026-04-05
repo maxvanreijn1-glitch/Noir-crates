@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripeSecretKey } from "@/lib/env";
 import { sql } from "@/lib/db";
-import { buildPackCards } from "@/lib/pack-opener";
+import { buildPackCardsAsync } from "@/lib/pack-opener";
 import { TCG_GAMES } from "@/lib/tcg-data";
 import { getCustomerFromRequest } from "@/lib/customer-auth";
+import type { PackType } from "@/lib/packs/types";
+
+const VALID_PACK_TYPES: PackType[] = ["basic", "premium", "elite"];
 
 export async function GET(req: NextRequest) {
   try {
@@ -40,6 +43,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Missing pack metadata" }, { status: 400 });
     }
 
+    const packType: PackType = VALID_PACK_TYPES.includes(metadata.packType as PackType)
+      ? (metadata.packType as PackType)
+      : "basic";
+    const boostMeter = Math.min(100, Math.max(0, parseInt(metadata.boostMeter ?? "0", 10)));
+
     const game = TCG_GAMES.find(g => g.id === tcgId);
     const set = game?.sets.find(s => s.id === setId);
     if (!game || !set) {
@@ -71,11 +79,17 @@ export async function GET(req: NextRequest) {
           })),
           tcg: game.name,
           setName: set.name,
+          boostMeterAfter: boostMeter,
         });
       }
 
-      // Generate new pack
-      const generatedCards = buildPackCards(tcgId, setId);
+      // Generate new pack using async builder (TCGdex for Pokémon, static for others)
+      const { cards: generatedCards, boostMeterAfter } = await buildPackCardsAsync({
+        tcgId,
+        setId,
+        packType,
+        boostMeter,
+      });
 
       // Optional customer from token
       const customer = await getCustomerFromRequest(req);
@@ -103,16 +117,23 @@ export async function GET(req: NextRequest) {
         cards: generatedCards,
         tcg: game.name,
         setName: set.name,
+        boostMeterAfter,
       });
     } catch (dbError) {
       // DB not available — return cards without persisting
       console.error("[pack-opener/open] DB error:", dbError);
-      const generatedCards = buildPackCards(tcgId, setId);
+      const { cards: generatedCards, boostMeterAfter } = await buildPackCardsAsync({
+        tcgId,
+        setId,
+        packType,
+        boostMeter,
+      });
       return NextResponse.json({
         openingId: 0,
         cards: generatedCards,
         tcg: game.name,
         setName: set.name,
+        boostMeterAfter,
       });
     }
   } catch (error) {
@@ -120,3 +141,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+

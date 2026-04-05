@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-guard";
-import { buildPackCards } from "@/lib/pack-opener";
+import { buildPackCardsAsync } from "@/lib/pack-opener";
 import { TCG_GAMES } from "@/lib/tcg-data";
 import { sql } from "@/lib/db";
+import type { PackType } from "@/lib/packs/types";
+
+const VALID_PACK_TYPES: PackType[] = ["basic", "premium", "elite"];
 
 /**
  * POST /api/pack-opener/admin-open
@@ -16,7 +19,12 @@ export async function POST(req: NextRequest) {
   if (adminOrError instanceof NextResponse) return adminOrError;
 
   try {
-    const body = (await req.json()) as { tcgId?: string; setId?: string };
+    const body = (await req.json()) as {
+      tcgId?: string;
+      setId?: string;
+      packType?: string;
+      boostMeter?: number;
+    };
     const { tcgId, setId } = body;
 
     if (!tcgId || !setId) {
@@ -25,6 +33,11 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    const packType: PackType = VALID_PACK_TYPES.includes(body.packType as PackType)
+      ? (body.packType as PackType)
+      : "basic";
+    const boostMeter = Math.min(100, Math.max(0, Math.round(body.boostMeter ?? 0)));
 
     const game = TCG_GAMES.find((g) => g.id === tcgId);
     if (!game) {
@@ -36,7 +49,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Set not found" }, { status: 404 });
     }
 
-    const cards = buildPackCards(tcgId, setId);
+    const { cards, boostMeterAfter } = await buildPackCardsAsync({
+      tcgId,
+      setId,
+      packType,
+      boostMeter,
+    });
 
     // Persist the opening so admin test packs appear in history
     let openingId = 0;
@@ -70,9 +88,11 @@ export async function POST(req: NextRequest) {
       cards,
       tcg: game.name,
       setName: set.name,
+      boostMeterAfter,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal error";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
