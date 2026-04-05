@@ -44,7 +44,7 @@
 }
 
 .badgeLimited {
-  background: var(--dark);
+  background: var(--primary);
 }
 
 .badgePremium {
@@ -58,7 +58,7 @@
 
 .imageWrap {
   position: relative;
-  background: #F0EDE8;
+  background: linear-gradient(135deg, #0e0e1a 0%, #1a1030 100%);
   padding: 28px;
   display: flex;
   align-items: center;

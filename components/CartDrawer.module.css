@@ -18,7 +18,10 @@
   width: 380px;
   max-width: 100vw;
   height: 100vh;
-  background: var(--bg-card);
+  background: rgba(13, 13, 26, 0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid rgba(139, 92, 246, 0.2);
   z-index: 201;
   box-shadow: var(--shadow-lg);
   display: flex;
@@ -100,7 +103,7 @@
   width: 60px;
   height: 60px;
   border-radius: var(--radius-sm);
-  background: #F0EDE8;
+  background: linear-gradient(135deg, #0e0e1a, #1a1030);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,7 +140,7 @@
   width: 24px;
   height: 24px;
   border-radius: var(--radius-sm);
-  background: var(--border);
+  background: rgba(139, 92, 246, 0.12);
   color: var(--dark);
   font-size: 1rem;
   display: flex;
@@ -147,8 +150,8 @@
 }
 
 .qtyBtn:hover {
-  background: var(--dark);
-  color: #FDFCF8;
+  background: var(--primary);
+  color: #fff;
 }
 
 .qty {
@@ -209,18 +212,20 @@
 .checkoutBtn {
   width: 100%;
   padding: 14px;
-  background: var(--dark);
-  color: #FDFCF8;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #fff;
   font-size: 0.78rem;
   font-weight: 500;
   border-radius: var(--radius-sm);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  transition: background 0.2s, transform 0.1s;
+  transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
 }
 
 .checkoutBtn:hover:not(:disabled) {
-  background: var(--primary);
+  opacity: 0.9;
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.5);
 }
 
 .checkoutBtn:active:not(:disabled) {

@@ -71,6 +71,18 @@ export default function PackOpenerClient() {
   const [visibleCards, setVisibleCards] = useState(0);
   const [shipStatus, setShipStatus] = useState<"idle" | "loading" | "done">("idle");
   const [shipError, setShipError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Detect whether the current session belongs to an admin
+  useEffect(() => {
+    fetch("/api/admin/auth/me", { credentials: "include" })
+      .then(r => { if (r.ok) setIsAdmin(true); })
+      .catch((err) => {
+        if (process.env.NODE_ENV === "development") {
+          console.debug("[PackOpener] Admin check failed:", err);
+        }
+      });
+  }, []);
 
   // When session_id is present, open the pack
   const openPack = useCallback(async (sid: string) => {
@@ -141,6 +153,38 @@ export default function PackOpenerClient() {
     }
   }
 
+  /** Admin-only: open a pack without payment */
+  async function handleAdminOpen() {
+    if (!selectedGame || !selectedSet) return;
+    setCheckoutLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/pack-opener/admin-open", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ tcgId: selectedGame.id, setId: selectedSet.id }),
+      });
+      const data = await res.json() as { openingId?: number; cards?: TcgCard[]; tcg?: string; setName?: string; error?: string };
+      if (!res.ok || data.error) {
+        setError(data.error ?? "Admin open failed");
+        setCheckoutLoading(false);
+        return;
+      }
+      setOpenResult({
+        openingId: data.openingId!,
+        cards: data.cards!,
+        tcg: data.tcg!,
+        setName: data.setName!,
+      });
+      setStep("opening");
+      setCheckoutLoading(false);
+    } catch {
+      setError("Network error. Please try again.");
+      setCheckoutLoading(false);
+    }
+  }
+
   async function handleShip() {
     if (!openResult) return;
     setShipStatus("loading");
@@ -186,6 +230,14 @@ export default function PackOpenerClient() {
         <h1 className={styles.heroTitle}>Pack Opener</h1>
         <p className={styles.heroSub}>Select your TCG, choose a set, and crack open a virtual booster pack</p>
       </div>
+
+      {/* Admin test mode banner */}
+      {isAdmin && (
+        <div className={styles.adminBanner}>
+          <span className={styles.adminBannerIcon}>⚡</span>
+          <span>Admin test mode — packs open for free</span>
+        </div>
+      )}
 
       <div className={styles.container}>
 
@@ -294,19 +346,29 @@ export default function PackOpenerClient() {
                 </div>
                 <div className={styles.checkoutRow}>
                   <span>Total</span>
-                  <span>£{selectedSet.priceGBP.toFixed(2)}</span>
+                  <span>{isAdmin ? <span className={styles.freeLabel}>FREE (admin)</span> : `£${selectedSet.priceGBP.toFixed(2)}`}</span>
                 </div>
               </div>
 
               {error && <p style={{ color: "#ff8888", fontSize: "0.85rem", marginBottom: "1rem" }}>{error}</p>}
 
-              <button
-                className={styles.payBtn}
-                onClick={handleCheckout}
-                disabled={checkoutLoading}
-              >
-                {checkoutLoading ? "Redirecting…" : "Proceed to Payment"}
-              </button>
+              {isAdmin ? (
+                <button
+                  className={styles.adminOpenBtn}
+                  onClick={handleAdminOpen}
+                  disabled={checkoutLoading}
+                >
+                  {checkoutLoading ? "Opening…" : "⚡ Open for Free (Admin Test)"}
+                </button>
+              ) : (
+                <button
+                  className={styles.payBtn}
+                  onClick={handleCheckout}
+                  disabled={checkoutLoading}
+                >
+                  {checkoutLoading ? "Redirecting…" : "Proceed to Payment"}
+                </button>
+              )}
               <br />
               <button className={styles.backLink} onClick={() => setStep("selectingSet")}>
                 ← Back to Set Selection

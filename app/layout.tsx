@@ -64,7 +64,7 @@ export default function RootLayout({
             flex-wrap: wrap;
           }
           .site-footer p {
-            color: rgba(245,242,237,0.35);
+            color: rgba(203, 213, 225, 0.4);
             font-size: 0.78rem;
             letter-spacing: 0.06em;
           }
@@ -73,14 +73,14 @@ export default function RootLayout({
             gap: 28px;
           }
           .site-footer nav a {
-            color: rgba(245,242,237,0.45);
+            color: rgba(203, 213, 225, 0.5);
             font-size: 0.75rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
             transition: color 0.2s;
           }
           .site-footer nav a:hover {
-            color: var(--gold-mid);
+            color: var(--primary);
           }
         `}</style>
       </body>

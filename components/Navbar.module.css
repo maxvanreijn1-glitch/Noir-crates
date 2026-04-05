@@ -2,10 +2,11 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(245, 242, 237, 0.96);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
+  background: rgba(7, 7, 15, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  box-shadow: 0 1px 40px rgba(0, 0, 0, 0.4);
 }
 
 .inner {
@@ -67,7 +68,8 @@
 }
 
 .cartBtn:hover {
-  background: var(--border);
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--primary);
 }
 
 .accountBtn {
@@ -83,7 +85,7 @@
 }
 
 .accountBtn:hover {
-  background: var(--border);
+  background: rgba(139, 92, 246, 0.15);
   color: var(--primary);
 }
 
@@ -141,10 +143,12 @@
   left: 50%;
   transform: translateX(-50%);
   min-width: 190px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: rgba(13, 13, 26, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(139, 92, 246, 0.1);
   padding: 6px 0;
   z-index: 200;
   animation: dropdownFadeIn 0.15s ease;
@@ -167,12 +171,12 @@
 }
 
 .dropdownItem:hover {
-  background: var(--bg);
+  background: rgba(139, 92, 246, 0.12);
   color: var(--dark);
 }
 
 .dropdownDivider {
   border: none;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
   margin: 4px 0;
 }

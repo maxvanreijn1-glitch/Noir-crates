@@ -95,7 +95,7 @@
 }
 
 .btn {
-  background: var(--dark);
+  background: var(--primary);
   border: none;
   border-radius: var(--radius-sm);
   color: #FDFCF8;
@@ -112,7 +112,7 @@
 }
 
 .btn:hover:not(:disabled) {
-  background: var(--primary);
+  background: var(--primary-hover);
 }
 
 .btn:disabled {

@@ -115,7 +115,7 @@
 }
 
 .checkoutBtn {
-  background: var(--dark);
+  background: var(--primary);
   color: #FDFCF8;
   padding: 11px 28px;
   border-radius: var(--radius-sm);
